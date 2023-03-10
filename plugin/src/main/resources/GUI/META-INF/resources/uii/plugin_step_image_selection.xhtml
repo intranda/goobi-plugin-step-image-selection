@@ -40,6 +40,7 @@
     </ui:define>
 
     <ui:define name="content">
+    	<script src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/imageView.min.js"></script>
     
         <h:form id="myform">
             <div class="box box-color lightgrey box-bordered">
@@ -63,6 +64,13 @@
                             <i class="fa fa-close" />
                             <x:updateActionListener property="#{NavigationForm.uiStatus.pluginSimulation}" value="#{false}" />
                         </h:commandLink>
+                        
+                        <h:commandButton value="Show First 20" action="#{AktuelleSchritteForm.myPlugin.function1}"/>
+                        <h:commandButton value="Add 10" action="#{AktuelleSchritteForm.myPlugin.showTenMore}"/>
+                        <h:commandButton value="Select 5 More" action="#{AktuelleSchritteForm.myPlugin.selectFiveRandomly}"/>
+                        <h:commandButton value="Delete 1 More" action="#{AktuelleSchritteForm.myPlugin.deselectOneRandomly}"/>
+                        <h:commandButton value="Button 5" action="#{AktuelleSchritteForm.myPlugin.saveToJson}"/>
+                        
                     </div>
                 </div>
 
@@ -71,9 +79,24 @@
 					<h:panelGroup id="actionform" styleClass="col-sm-12">
 						<div class="row">
 							<h:form>
-								hello step plugin: #{AktuelleSchritteForm.myPlugin.value}
+								<!-- hello step plugin: #{AktuelleSchritteForm.myPlugin.value} -->
+								<!-- 
+								<ui:repeat var="image" value="#{AktuelleSchritteForm.myPlugin.images}">
+								
+									#{image.objectUrl}
+
+								 	<h:graphicImage value="#{image.thumbnailUrl}" />
+								 
+	
+								 	
+								 	<br/>
+								 
+								</ui:repeat>
+								-->
+								
 							</h:form>
 						</div>
+						
 					</h:panelGroup>
 					
                 </div>
