@@ -160,13 +160,13 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         imagesFirstLoad = images.subList(0, topIndex);
     }
 
-    public void function1() {
-        showFirstImages();
+    public void loadImages() {
+        loadFirstImages();
         readSelectedFromJson();
         showSelectedImages();
     }
 
-    public void showFirstImages() {
+    public void loadFirstImages() {
         int topIndex = imagesFirstLoad.size();
         log.debug("The first " + topIndex + " imges in " + folder + " will be shown:");
         imagesToShow = new ArrayList<Image>(imagesFirstLoad);
@@ -233,7 +233,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         return -1;
     }
 
-    public void showMoreImages() {
+    public void loadMoreImages() {
         int topIndex = Math.min(currentIndex + defaultNumberToAdd, images.size());
 
         if (currentIndex == topIndex) {
@@ -298,7 +298,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         showSelectedImages();
     }
 
-    public void saveToJson() {
+    public void saveAsProperty() {
         //        List<Processproperty> properties = process.getEigenschaftenList();
         //        for (Processproperty property : properties) {
         //            log.debug("property.toString() = " + property.toString());

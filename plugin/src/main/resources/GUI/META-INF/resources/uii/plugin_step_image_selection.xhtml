@@ -65,11 +65,11 @@
                             <x:updateActionListener property="#{NavigationForm.uiStatus.pluginSimulation}" value="#{false}" />
                         </h:commandLink>
                         
-                        <h:commandButton value="Show First Load" action="#{AktuelleSchritteForm.myPlugin.function1}"/>
-                        <h:commandButton value="Load More" action="#{AktuelleSchritteForm.myPlugin.showMoreImages}"/>
+                        <h:commandButton value="Show First Load" action="#{AktuelleSchritteForm.myPlugin.loadImages}"/>
+                        <h:commandButton value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}"/>
                         <h:commandButton value="Select 5 More" action="#{AktuelleSchritteForm.myPlugin.selectFiveRandomly}"/>
                         <h:commandButton value="Delete 1 More" action="#{AktuelleSchritteForm.myPlugin.deselectOneRandomly}"/>
-                        <h:commandButton value="Button 5" action="#{AktuelleSchritteForm.myPlugin.saveToJson}"/>
+                        <h:commandButton value="Save As Property" action="#{AktuelleSchritteForm.myPlugin.saveAsProperty}"/>
                         
                     </div>
                 </div>
