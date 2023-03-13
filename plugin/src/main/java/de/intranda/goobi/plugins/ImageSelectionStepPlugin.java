@@ -118,6 +118,12 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         maxSelectionAllowed = myconfig.getInt("max", 5);
         minSelectionAllowed = myconfig.getInt("min", 1);
 
+        if (maxSelectionAllowed < minSelectionAllowed) {
+            log.debug("The configured max is less than the configured min, hence no selection will be allowed.");
+            maxSelectionAllowed = 0;
+            minSelectionAllowed = 0;
+        }
+
         allowTaskFinishButtons = myconfig.getBoolean("allowTaskFinishButtons", false);
         log.info("ImageSelection step plugin initialized");
         process = this.step.getProzess();
@@ -189,8 +195,15 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
         values = values.substring(1, values.length() - 1);
         String[] valuesList = values.split(",");
-        String[] names = new String[valuesList.length];
-        for (int i = 0; i < valuesList.length; ++i) {
+        int validNumberOfValues = valuesList.length;
+        if (validNumberOfValues > maxSelectionAllowed) {
+            log.debug("The saved property contains more selected items than it is allowed. Only the first " + maxSelectionAllowed
+                    + " will be taken into account.");
+            validNumberOfValues = maxSelectionAllowed;
+        }
+        String[] names = new String[validNumberOfValues];
+
+        for (int i = 0; i < validNumberOfValues; ++i) {
             String value = valuesList[i];
             String[] valueParts = value.split(":");
             names[i] = valueParts[0].replace("\"", "");
