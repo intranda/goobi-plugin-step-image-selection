@@ -292,7 +292,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         showSelectedImages();
     }
 
-    public void saveAsProperty() {
+    public boolean saveAsProperty() {
         //        List<Processproperty> properties = process.getEigenschaftenList();
         //        for (Processproperty property : properties) {
         //            log.debug("property.toString() = " + property.toString());
@@ -303,11 +303,17 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         //            log.debug("property.getProcessId() = " + property.getProcessId());
         //            log.debug("property.getId() = " + property.getId());
         //        }
+        if (selectedImageMap.size() < minSelectionAllowed) {
+            log.debug("Cannot save property. At least " + minSelectionAllowed + " should be selected.");
+            return false;
+        }
         setUpProcesspropertyToSave(process.getId(), PROPERTY_TITLE);
         String jsonOfSelected = createJsonOfSelectedImages();
         property.setWert(jsonOfSelected);
         log.debug(jsonOfSelected);
         PropertyManager.saveProcessProperty(property);
+
+        return true;
     }
 
     private void setUpProcesspropertyToSave(int processId, String title) {
@@ -366,6 +372,10 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     public void selectImage(String name, int startIndex) {
+        if (selectedImageMap.size() == maxSelectionAllowed) {
+            log.debug("Cannot select more since the maximum number allowed " + maxSelectionAllowed + " is already reached.");
+            return;
+        }
         int index = getIndexOfImage(name, startIndex - 1);
         Image image = images.get(index);
         if (!selectedImageMap.containsValue(image)) {
