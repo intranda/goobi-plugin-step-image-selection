@@ -434,6 +434,9 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         boolean successful = true;
         // your logic goes here
 
+        // start loading
+        loadImages();
+
         log.info("ImageSelection step plugin executed");
         if (!successful) {
             return PluginReturnValue.ERROR;
