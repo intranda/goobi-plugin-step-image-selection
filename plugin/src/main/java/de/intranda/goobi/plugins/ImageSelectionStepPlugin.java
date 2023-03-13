@@ -60,40 +60,39 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     private String title = "intranda_step_image_selection";
     @Getter
     private Step step;
-    @Getter
-    private String value;
+
     @Getter
     private boolean allowTaskFinishButtons;
     private String returnPath;
 
-    @Getter
     private String folderName;
 
     private Process process;
     
-    private static final String JSON_PATH = "/home/zehong/work/selected_images.json";
-
     private static final String PROPERTY_TITLE = "plugin_intranda_step_image_selection";
 
     private int currentIndex = 0;
 
-    @Getter
-    private List<Path> imagePaths = new ArrayList<Path>();
+    private List<Path> imagePaths = new ArrayList<>();
+
+    private List<Image> images = new ArrayList<>();
+
+    private List<Image> imagesFirstLoad = new ArrayList<>();
 
     @Getter
-    private List<Image> images = new ArrayList<Image>();
-
-    private List<Image> imagesFirstLoad = new ArrayList<Image>();
-
-    @Getter
-    private List<Image> imagesToShow = new ArrayList<Image>();
-    //    private List<Image> imagesSelected = new ArrayList<Image>();
+    private List<Image> imagesToShow = new ArrayList<>();
+    //    private List<Image> imagesSelected = new ArrayList<>();
 
     //    private HashSet<Integer> selectedIndices = new HashSet<>();
     private Map<Integer, Image> selectedImageMap = new TreeMap<>();
 
     private int defaultNumberToLoad;
     private int defaultNumberToAdd;
+
+    private int maxSelectionAllowed;
+    private int minSelectionAllowed;
+
+    private Processproperty property = null;
 
     private static Random rand = new Random();
     private static StorageProviderInterface storageProvider = StorageProvider.getInstance();
@@ -111,11 +110,13 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
         // read parameters from correct block in configuration file
         SubnodeConfiguration myconfig = ConfigPlugins.getProjectAndStepConfig(title, step);
-        value = myconfig.getString("value", "default value");
         folderName = myconfig.getString("folder", "master");
 
         defaultNumberToLoad = myconfig.getInt("defaultNumberToLoad", 20);
         defaultNumberToAdd = myconfig.getInt("defaultNumberToAdd", 10);
+
+        maxSelectionAllowed = myconfig.getInt("max", 5);
+        minSelectionAllowed = myconfig.getInt("min", 1);
 
         allowTaskFinishButtons = myconfig.getBoolean("allowTaskFinishButtons", false);
         log.info("ImageSelection step plugin initialized");
@@ -123,9 +124,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         try {
             // get folderPath
             Path folderPath = initializeFolderPath(process, folderName);
-            //            Path folderPath = Path.of(process.getImagesDirectory()); // images
-            //            Path folderPath = Path.of(process.getImagesTifDirectory(false)); // media
-            //            Path folderPath = Path.of(process.getImagesOrigDirectory(true)); // master
             log.debug("folder path = " + folderPath);
 
             // initialize images
@@ -174,27 +172,17 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     public void loadFirstImages() {
         int topIndex = imagesFirstLoad.size();
         log.debug("The first " + topIndex + " imges in " + folderName + " will be shown:");
-        imagesToShow = new ArrayList<Image>(imagesFirstLoad);
+        imagesToShow = new ArrayList<>(imagesFirstLoad);
         currentIndex = topIndex;
         showImages(imagesToShow);
     }
 
     private void readSelectedFromJson() {
         selectedImageMap = new TreeMap<>();
-        Processproperty property = null;
-        List<Processproperty> props = PropertyManager.getProcessPropertiesForProcess(process.getId());
-        for (Processproperty p : props) {
-            if (PROPERTY_TITLE.equals(p.getTitel())) {
-                property = p;
-                break;
-            }
-        }
-        if (property == null) {
-            // no such property exists yet
-            return;
-        }
+        setUpProcesspropertyToSave(process.getId(), PROPERTY_TITLE);
+
         String values = property.getWert();
-        if (values.length() <= 2) {
+        if (StringUtils.isBlank(values) || values.length() <= 2) {
             // the property is empty
             return;
         }
@@ -315,28 +303,32 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         //            log.debug("property.getProcessId() = " + property.getProcessId());
         //            log.debug("property.getId() = " + property.getId());
         //        }
-        Processproperty property = getProcesspropertyToSave(process.getId(), PROPERTY_TITLE);
-        String namesCombined = combineNamesOfSelectedImages();
-        property.setWert(namesCombined);
-        log.debug(namesCombined);
+        setUpProcesspropertyToSave(process.getId(), PROPERTY_TITLE);
+        String jsonOfSelected = createJsonOfSelectedImages();
+        property.setWert(jsonOfSelected);
+        log.debug(jsonOfSelected);
         PropertyManager.saveProcessProperty(property);
     }
 
-    private Processproperty getProcesspropertyToSave(int processId, String title) {
+    private void setUpProcesspropertyToSave(int processId, String title) {
+        if (property != null) {
+            // already initialized
+            return;
+        }
         List<Processproperty> props = PropertyManager.getProcessPropertiesForProcess(processId);
         for (Processproperty p : props) {
             if (title.equals(p.getTitel())) {
-                return p;
+                property = p;
+                return;
             }
         }
         // no such property exists yet, create a new one
-        Processproperty property = new Processproperty();
+        property = new Processproperty();
         property.setProcessId(processId);
         property.setTitel(title);
-        return property;
     }
 
-    private String combineNamesOfSelectedImages() {
+    private String createJsonOfSelectedImages() {
         StringBuilder sb = new StringBuilder("{");
         Collection<Image> selectedImages = selectedImageMap.values();
         for (Image image : selectedImages) {
@@ -373,10 +365,11 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         return selectedImageMap.values();
     }
 
-    public void selectImage(String name) {
-        if (!selectedImageMap.containsValue(name)) {
-            int index = getIndexOfImage(name);
-            selectedImageMap.put(index, images.get(index));
+    public void selectImage(String name, int startIndex) {
+        int index = getIndexOfImage(name, startIndex - 1);
+        Image image = images.get(index);
+        if (!selectedImageMap.containsValue(image)) {
+            selectedImageMap.put(index, image);
             log.debug("new image selected: " + name);
         }
     }
