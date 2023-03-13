@@ -93,6 +93,19 @@
 								 
 								</ui:repeat>
 								-->
+								<hr/>
+								<h3>Images Loaded:</h3>
+								<hr/>
+								<ui:repeat var="image" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
+									<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName)}"/>
+								</ui:repeat>
+								<hr/>
+								
+								<h3>Images Selected:</h3>
+								<hr/>
+								<ui:repeat var="image" value="#{AktuelleSchritteForm.myPlugin.imagesSelected}">
+									<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName)}"/>
+								</ui:repeat>
 								
 							</h:form>
 						</div>

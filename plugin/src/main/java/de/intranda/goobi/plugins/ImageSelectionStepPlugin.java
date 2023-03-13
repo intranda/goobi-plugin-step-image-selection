@@ -85,6 +85,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     private List<Image> imagesFirstLoad = new ArrayList<Image>();
 
+    @Getter
     private List<Image> imagesToShow = new ArrayList<Image>();
     //    private List<Image> imagesSelected = new ArrayList<Image>();
 
@@ -179,6 +180,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     private void readSelectedFromJson() {
+        selectedImageMap = new TreeMap<>();
         Processproperty property = null;
         List<Processproperty> props = PropertyManager.getProcessPropertiesForProcess(process.getId());
         for (Processproperty p : props) {
@@ -209,7 +211,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     private void initializeSelectedImageMap(String[] names) {
-        selectedImageMap = new TreeMap<>();
+        //        selectedImageMap = new TreeMap<>();
         int index;
         int lastIndex = -1; // index of the last found image
         for (String name : names) {
@@ -365,6 +367,25 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             log.debug(image.getImageName());
         }
         log.debug("The number of selected images is " + selectedImages.size());
+    }
+
+    public Collection<Image> getImagesSelected() {
+        return selectedImageMap.values();
+    }
+
+    public void selectImage(String name) {
+        if (!selectedImageMap.containsValue(name)) {
+            int index = getIndexOfImage(name);
+            selectedImageMap.put(index, images.get(index));
+            log.debug("new image selected: " + name);
+        }
+    }
+
+    public void deselectImage(String name) {
+        int index = getIndexOfImage(name);
+        Image deselected = selectedImageMap.remove(index);
+        log.debug("Image deselected: " + deselected.getImageName());
+        showSelectedImages();
     }
 
     @Override
