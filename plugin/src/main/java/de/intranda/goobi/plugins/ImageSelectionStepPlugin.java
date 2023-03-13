@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
@@ -399,6 +400,15 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     public void deselectImage(String name) {
         int index = getIndexOfImage(name);
+        Image deselected = selectedImageMap.remove(index);
+        log.debug("Image deselected: " + deselected.getImageName());
+        showSelectedImages();
+    }
+
+    public void deselectImage(String name, int order) {
+        Set<Integer> keys = selectedImageMap.keySet();
+        Integer[] selectedIndices = keys.toArray(new Integer[keys.size()]);
+        int index = selectedIndices[order];
         Image deselected = selectedImageMap.remove(index);
         log.debug("Image deselected: " + deselected.getImageName());
         showSelectedImages();
