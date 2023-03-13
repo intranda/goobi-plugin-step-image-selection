@@ -1,10 +1,6 @@
 package de.intranda.goobi.plugins;
 
-import java.io.BufferedReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.goobi.beans.Process;
@@ -45,13 +40,12 @@ import org.goobi.production.enums.PluginType;
 import org.goobi.production.enums.StepReturnValue;
 import org.goobi.production.plugin.interfaces.IStepPluginVersion2;
 
-import com.google.gson.Gson;
-
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.metadaten.Image;
+import de.sub.goobi.persistence.managers.PropertyManager;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
@@ -77,6 +71,8 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     
     private static final String JSON_PATH = "/home/zehong/work/selected_images.json";
 
+    private static final String PROPERTY_TITLE = "plugin_intranda_step_image_selection";
+
     private int currentIndex = 0;
 
     @Getter
@@ -85,13 +81,16 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     @Getter
     private List<Image> images = new ArrayList<Image>();
 
-    private List<Image> imagesFirst20 = new ArrayList<Image>();
+    private List<Image> imagesFirstLoad = new ArrayList<Image>();
 
     private List<Image> imagesToShow = new ArrayList<Image>();
     //    private List<Image> imagesSelected = new ArrayList<Image>();
 
     //    private HashSet<Integer> selectedIndices = new HashSet<>();
     private Map<Integer, Image> selectedImageMap = new TreeMap<>();
+
+    private int defaultNumberToLoad;
+    private int defaultNumberToAdd;
 
     private static Random rand = new Random();
 
@@ -110,6 +109,10 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         SubnodeConfiguration myconfig = ConfigPlugins.getProjectAndStepConfig(title, step);
         value = myconfig.getString("value", "default value");
         folder = myconfig.getString("folder", "master");
+
+        defaultNumberToLoad = myconfig.getInt("defaultNumberToLoad", 20);
+        defaultNumberToAdd = myconfig.getInt("defaultNumberToAdd", 10);
+
         allowTaskFinishButtons = myconfig.getBoolean("allowTaskFinishButtons", false);
         log.info("ImageSelection step plugin initialized");
         process = this.step.getProzess();
@@ -153,49 +156,58 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             Image image = new Image(process, imageFolderName, fileName, order++, thumbnailSize);
             images.add(image);
         }
-        int topIndex = Math.min(20, images.size());
-        imagesFirst20 = images.subList(0, topIndex);
-
+        int topIndex = Math.min(defaultNumberToLoad, images.size());
+        imagesFirstLoad = images.subList(0, topIndex);
     }
 
     public void function1() {
-        showFirstTwenty();
+        showFirstImages();
         readSelectedFromJson();
         showSelectedImages();
     }
 
-    public void showFirstTwenty() {
-        int topIndex = imagesFirst20.size();
+    public void showFirstImages() {
+        int topIndex = imagesFirstLoad.size();
         log.debug("The first " + topIndex + " imges in " + folder + " will be shown:");
-        imagesToShow = new ArrayList<Image>(imagesFirst20);
-        currentIndex = 20;
+        imagesToShow = new ArrayList<Image>(imagesFirstLoad);
+        currentIndex = defaultNumberToLoad;
         showImages(imagesToShow);
     }
 
     private void readSelectedFromJson() {
-        // initialize selectedImageMap if Json file is successfully read
-        if (StorageProvider.getInstance().isFileExists(Path.of(JSON_PATH))) {
-            String storedJson = "";
-            try (InputStream fileStream = StorageProvider.getInstance().newInputStream(Path.of(JSON_PATH))) {
-                storedJson = new BufferedReader(new InputStreamReader(fileStream)).lines().collect(Collectors.joining("\n"));
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            log.debug("storedProperty = " + storedJson);
-            Gson gson = new Gson();
-            Processproperty storedProperty = gson.fromJson(storedJson, Processproperty.class);
-            String[] namesOfSelected = storedProperty.getWert().split(" ");
-            if (namesOfSelected.length > 0) {
-                initializeSelectedImageMap(namesOfSelected);
+        Processproperty property = null;
+        List<Processproperty> props = PropertyManager.getProcessPropertiesForProcess(process.getId());
+        for (Processproperty p : props) {
+            if (PROPERTY_TITLE.equals(p.getTitel())) {
+                property = p;
+                break;
             }
         }
+        if (property == null) {
+            // no such property exists yet
+            return;
+        }
+        String values = property.getWert();
+        if (values.length() <= 2) {
+            // the property is empty
+            return;
+        }
+
+        values = values.substring(1, values.length() - 1);
+        String[] valuesList = values.split(",");
+        String[] names = new String[valuesList.length];
+        for (int i = 0; i < valuesList.length; ++i) {
+            String value = valuesList[i];
+            String[] valueParts = value.split(":");
+            names[i] = valueParts[0].replace("\"", "");
+        }
+        initializeSelectedImageMap(names);
     }
 
     private void initializeSelectedImageMap(String[] names) {
         selectedImageMap = new TreeMap<>();
         int index;
-        int lastIndex = 0; // index of the last found image
+        int lastIndex = -1; // index of the last found image
         for (String name : names) {
             index = getIndexOfImage(name, lastIndex);
             if (index < 0) {
@@ -212,7 +224,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     private int getIndexOfImage(String name, int start) {
-        for (int i = start; i < images.size(); ++i) {
+        for (int i = start + 1; i < images.size(); ++i) {
             Image image = images.get(i);
             if (name.equals(image.getImageName())) {
                 return i;
@@ -221,8 +233,8 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         return -1;
     }
 
-    public void showTenMore() {
-        int topIndex = Math.min(currentIndex + 10, images.size());
+    public void showMoreImages() {
+        int topIndex = Math.min(currentIndex + defaultNumberToAdd, images.size());
 
         if (currentIndex == topIndex) {
             log.debug("All images are already shown.");
@@ -287,7 +299,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     public void saveToJson() {
-        log.debug("Button 5 is clicked.");
         //        List<Processproperty> properties = process.getEigenschaftenList();
         //        for (Processproperty property : properties) {
         //            log.debug("property.toString() = " + property.toString());
@@ -298,28 +309,42 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         //            log.debug("property.getProcessId() = " + property.getProcessId());
         //            log.debug("property.getId() = " + property.getId());
         //        }
-        Processproperty property = new Processproperty();
-        //        property.setProzess(process);
-        property.setProcessId(process.getId());
-        property.setTitel("names of selected images");
+        Processproperty property = getProcesspropertyToSave(process.getId(), PROPERTY_TITLE);
         String namesCombined = combineNamesOfSelectedImages();
         property.setWert(namesCombined);
-        Gson gson = new Gson();
-        try (FileWriter writer = new FileWriter(JSON_PATH)) {
-            gson.toJson(property, writer);
-        } catch (IOException e) {
-            e.printStackTrace();
+        log.debug(namesCombined);
+        PropertyManager.saveProcessProperty(property);
+    }
+
+    private Processproperty getProcesspropertyToSave(int processId, String title) {
+        List<Processproperty> props = PropertyManager.getProcessPropertiesForProcess(processId);
+        for (Processproperty p : props) {
+            if (title.equals(p.getTitel())) {
+                return p;
+            }
         }
+        // no such property exists yet, create a new one
+        Processproperty property = new Processproperty();
+        property.setProcessId(processId);
+        property.setTitel(title);
+        return property;
     }
 
     private String combineNamesOfSelectedImages() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("{");
         Collection<Image> selectedImages = selectedImageMap.values();
         for (Image image : selectedImages) {
+            sb.append("\"");
             sb.append(image.getImageName());
-            sb.append(" ");
+            sb.append("\":\"");
+            sb.append(image.getUrl());
+            sb.append("\",");
         }
-        return sb.length() > 1 ? sb.substring(0, sb.length() - 1).toString() : "";
+        if (sb.length() > 1) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        sb.append("}");
+        return sb.toString();
     }
 
     private void showImages(List<Image> newImagesToShow) {
