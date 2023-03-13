@@ -31,6 +31,7 @@ import java.util.Random;
 import java.util.TreeMap;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
 import org.goobi.beans.Processproperty;
 import org.goobi.beans.Step;
@@ -42,6 +43,7 @@ import org.goobi.production.plugin.interfaces.IStepPluginVersion2;
 
 import de.sub.goobi.config.ConfigPlugins;
 import de.sub.goobi.helper.StorageProvider;
+import de.sub.goobi.helper.StorageProviderInterface;
 import de.sub.goobi.helper.exceptions.DAOException;
 import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.metadaten.Image;
@@ -65,7 +67,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     private String returnPath;
 
     @Getter
-    private String folder;
+    private String folderName;
 
     private Process process;
     
@@ -93,6 +95,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     private int defaultNumberToAdd;
 
     private static Random rand = new Random();
+    private static StorageProviderInterface storageProvider = StorageProvider.getInstance();
 
     //    public List<String> getImages() {
     //        //        return images.stream().forEach(Path::toString).collect(Collectors.toList()l);
@@ -108,7 +111,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         // read parameters from correct block in configuration file
         SubnodeConfiguration myconfig = ConfigPlugins.getProjectAndStepConfig(title, step);
         value = myconfig.getString("value", "default value");
-        folder = myconfig.getString("folder", "master");
+        folderName = myconfig.getString("folder", "master");
 
         defaultNumberToLoad = myconfig.getInt("defaultNumberToLoad", 20);
         defaultNumberToAdd = myconfig.getInt("defaultNumberToAdd", 10);
@@ -118,14 +121,13 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         process = this.step.getProzess();
         try {
             // get folderPath
-            Path folderPath = initializeFolderPath(folder);
+            Path folderPath = initializeFolderPath(process, folderName);
             //            Path folderPath = Path.of(process.getImagesDirectory()); // images
             //            Path folderPath = Path.of(process.getImagesTifDirectory(false)); // media
             //            Path folderPath = Path.of(process.getImagesOrigDirectory(true)); // master
             log.debug("folder path = " + folderPath);
 
             // initialize images
-            //            imagePaths = StorageProvider.getInstance().listFiles(folderPath.toString());
             initializeImages(folderPath);
             
         } catch (IOException | SwapException | DAOException e) {
@@ -135,19 +137,21 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     }
 
-    private Path initializeFolderPath(String folderName) throws IOException, SwapException, DAOException {
-        switch (folderName) {
-            case "media":
-                return Path.of(process.getImagesTifDirectory(false));
-            case "master":
-                return Path.of(process.getImagesOrigDirectory(true));
-            default:
-                return Path.of(process.getImagesDirectory());
+    private Path initializeFolderPath(Process process, String folderName) throws IOException, SwapException, DAOException {
+        String folder = process.getConfiguredImageFolder(folderName);
+        if (StringUtils.isBlank(folder)) {
+            log.debug("The folder configured as '" + folderName + "' does not exist yet.");
+            return null;
         }
+        return Path.of(folder);
     }
 
     private void initializeImages(Path folderPath) throws IOException, SwapException, DAOException {
-        imagePaths = StorageProvider.getInstance().listFiles(folderPath.toString());
+        if (folderPath == null) {
+            log.debug("There are no images available for NULL!");
+            return;
+        }
+        imagePaths = storageProvider.listFiles(folderPath.toString());
         int order = 0;
         String imageFolderName = folderPath.getFileName().toString();
         Integer thumbnailSize = null;
@@ -168,9 +172,9 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     public void loadFirstImages() {
         int topIndex = imagesFirstLoad.size();
-        log.debug("The first " + topIndex + " imges in " + folder + " will be shown:");
+        log.debug("The first " + topIndex + " imges in " + folderName + " will be shown:");
         imagesToShow = new ArrayList<Image>(imagesFirstLoad);
-        currentIndex = defaultNumberToLoad;
+        currentIndex = topIndex;
         showImages(imagesToShow);
     }
 
@@ -220,7 +224,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     private int getIndexOfImage(String name) {
-        return getIndexOfImage(name, 0);
+        return getIndexOfImage(name, -1);
     }
 
     private int getIndexOfImage(String name, int start) {
