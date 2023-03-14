@@ -71,7 +71,9 @@
                         <h:commandButton value="Select 5 More" action="#{AktuelleSchritteForm.myPlugin.selectFiveRandomly}"/>
                         <h:commandButton value="Delete 1 More" action="#{AktuelleSchritteForm.myPlugin.deselectOneRandomly}"/>
                         -->
+                        <!-- 
                         <h:commandButton value="Save As Property" action="#{AktuelleSchritteForm.myPlugin.saveAsProperty}"/>
+                        -->
                         
                     </div>
                 </div>
@@ -96,22 +98,33 @@
 								</ui:repeat>
 								-->
 								<div id="images-loaded">
-									<h3>Images Loaded:</h3>
+									<h3>
+										<h:outputText value="#{AktuelleSchritteForm.myPlugin.loadedTitle}" />
+									</h3>
 									<hr/>
-									<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
-										<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"/>
-									</ui:repeat>
+									<div id="images-to-show">
+										<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
+											<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"/>
+										</ui:repeat>
+									</div>
 								</div>
 								
 								<div id="images-selected">
-									<h3>Images Selected:</h3>
+									<h3>
+										<h:outputText value="#{AktuelleSchritteForm.myPlugin.selectedTitle}" />
+									</h3>
 									<hr/>
-									<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesSelected}">
-										<!-- 
-										<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName)}"/>
-										-->
-										<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName, status.index)}" />
-									</ui:repeat>
+									<div id="images-selected-list">
+										<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesSelected}">
+											<!-- 
+											<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName)}"/>
+											-->
+											<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName, status.index)}" />
+										</ui:repeat>
+									</div>
+									<div id="save-property-button">
+										<h:commandButton value="Save As Property" action="#{AktuelleSchritteForm.myPlugin.saveAsProperty}"/>
+									</div>
 								</div>
 								
 

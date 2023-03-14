@@ -72,6 +72,9 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     
     private static final String PROPERTY_TITLE = "plugin_intranda_step_image_selection";
 
+    private static final String IMAGES_LOADED_TITLE = "Images Loaded";
+    private static final String IMAGES_SELECTED_TITLE = "Images Selected";
+
     private int currentIndex = 0;
 
     private List<Path> imagePaths = new ArrayList<>();
@@ -412,6 +415,14 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         Image deselected = selectedImageMap.remove(index);
         log.debug("Image deselected: " + deselected.getImageName());
         showSelectedImages();
+    }
+
+    public String getLoadedTitle() {
+        return IMAGES_LOADED_TITLE;
+    }
+
+    public String getSelectedTitle() {
+        return IMAGES_SELECTED_TITLE;
     }
 
     @Override
