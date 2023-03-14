@@ -120,11 +120,13 @@
 										<h:outputText value="#{AktuelleSchritteForm.myPlugin.loadedTitle}" />
 									</h3>
 									<hr/>
-									<div id="images-loaded-list">
+									<h:panelGroup layout="block" id="images-loaded-list">
 										<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
-											<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"/>
+											<div>
+												<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"/>
+											</div>
 										</ui:repeat>
-									</div>
+									</h:panelGroup>
 								</div>
 								
 								
