@@ -97,18 +97,6 @@
 								 
 								</ui:repeat>
 								-->
-								<div id="images-loaded">
-									<h3>
-										<h:outputText value="#{AktuelleSchritteForm.myPlugin.loadedTitle}" />
-									</h3>
-									<hr/>
-									<div id="images-to-show">
-										<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
-											<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"/>
-										</ui:repeat>
-									</div>
-								</div>
-								
 								<div id="images-selected">
 									<h3>
 										<h:outputText value="#{AktuelleSchritteForm.myPlugin.selectedTitle}" />
@@ -127,7 +115,19 @@
 									</div>
 								</div>
 								
-
+								<div id="images-loaded">
+									<h3>
+										<h:outputText value="#{AktuelleSchritteForm.myPlugin.loadedTitle}" />
+									</h3>
+									<hr/>
+									<div id="images-loaded-list">
+										<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
+											<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"/>
+										</ui:repeat>
+									</div>
+								</div>
+								
+								
 								
 							</h:form>
 						</div>

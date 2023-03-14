@@ -25,11 +25,11 @@ import java.util.Collection;
  */
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.lang.StringUtils;
@@ -88,7 +88,8 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     //    private List<Image> imagesSelected = new ArrayList<>();
 
     //    private HashSet<Integer> selectedIndices = new HashSet<>();
-    private Map<Integer, Image> selectedImageMap = new TreeMap<>();
+    //    private Map<Integer, Image> selectedImageMap = new TreeMap<>();
+    private Map<Integer, Image> selectedImageMap = new LinkedHashMap<>();
 
     private int defaultNumberToLoad;
     private int defaultNumberToAdd;
@@ -188,7 +189,8 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     private void readSelectedFromJson() {
-        selectedImageMap = new TreeMap<>();
+        //        selectedImageMap = new TreeMap<>();
+        selectedImageMap = new LinkedHashMap<>();
         setUpProcesspropertyToSave(process.getId(), PROPERTY_TITLE);
 
         String values = property.getWert();
@@ -212,10 +214,11 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             String[] valueParts = value.split(":");
             names[i] = valueParts[0].replace("\"", "");
         }
-        initializeSelectedImageMap(names);
+        //        initializeSelectedImageTreeMap(names);
+        initializeSelectedImageLinkedMap(names);
     }
 
-    private void initializeSelectedImageMap(String[] names) {
+    private void initializeSelectedImageTreeMap(String[] names) {
         //        selectedImageMap = new TreeMap<>();
         int index;
         int lastIndex = -1; // index of the last found image
@@ -227,6 +230,33 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             }
             selectedImageMap.put(index, images.get(index));
             lastIndex = index;
+        }
+    }
+
+    private void initializeSelectedImageLinkedMap(String[] names) {
+        //        selectedImageMap = new LinkedHashMap<>();
+        HashMap<String, Integer> nameToIndexMap = new HashMap<>();
+        for (String name : names) {
+            nameToIndexMap.put(name, -1);
+        }
+        int unfound = names.length;
+        for (int i = 0; i < images.size() && unfound > 0; ++i) {
+            Image image = images.get(i);
+            String imageName = image.getImageName();
+            if (nameToIndexMap.containsKey(imageName)) {
+                nameToIndexMap.put(imageName, i);
+                --unfound;
+            }
+        }
+        // initialize the LinkedHashMap selectedImageMap
+        for (String name : names) {
+            int index = nameToIndexMap.get(name);
+            // check if there is still any -1 in the value list
+            if (index < 0) {
+                log.debug("The image " + name + " was not found. It is probably renamed or moved.");
+                continue;
+            }
+            selectedImageMap.put(index, images.get(index));
         }
     }
 
@@ -261,9 +291,12 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     public void selectFiveRandomly() {
-        int numberOfUnselected = getNumberOfUnselectedBelow(currentIndex);
+        //        int numberOfUnselected = getNumberOfUnselectedBelowForTreeMap(currentIndex);
+        int numberOfUnselected = getNumberOfUnselectedBelowForLinkedMap(currentIndex);
         log.debug("number of unselected below " + currentIndex + " = " + numberOfUnselected);
-        int topIndex = Math.min(5, numberOfUnselected);
+        int numberOfSelectable = Math.min(5, numberOfUnselected);
+        int numberStillAllowed = maxSelectionAllowed - selectedImageMap.size();
+        int topIndex = Math.min(numberOfSelectable, numberStillAllowed);
         for (int i = 0; i < topIndex; ++i) {
             int n = getNextIndex();
             Image imageToAdd = imagesToShow.get(n);
@@ -275,11 +308,22 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         showSelectedImages();
     }
 
-    private int getNumberOfUnselectedBelow(int index) {
+    private int getNumberOfUnselectedBelowForTreeMap(int index) {
         int n = index;
         for (int key : selectedImageMap.keySet()) {
             if (key >= index) {
                 break;
+            }
+            --n;
+        }
+        return n;
+    }
+
+    private int getNumberOfUnselectedBelowForLinkedMap(int index) {
+        int n = index;
+        for (int key : selectedImageMap.keySet()) {
+            if (key >= index) {
+                continue;
             }
             --n;
         }
