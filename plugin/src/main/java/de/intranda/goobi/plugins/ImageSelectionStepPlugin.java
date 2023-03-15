@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.configuration.SubnodeConfiguration;
@@ -104,7 +103,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     private Processproperty property = null;
 
-    private static Random rand = new Random();
     private static StorageProviderInterface storageProvider = StorageProvider.getInstance();
 
     @Override
@@ -220,20 +218,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         initializeSelectedImageLinkedMap(names);
     }
 
-    private void initializeSelectedImageTreeMap(String[] names) {
-        int index;
-        int lastIndex = -1; // index of the last found image
-        for (String name : names) {
-            index = getIndexOfImage(name, lastIndex);
-            if (index < 0) {
-                log.debug("The image " + name + " was not found. It is probably renamed or moved.");
-                continue;
-            }
-            selectedImageMap.put(index, images.get(index));
-            lastIndex = index;
-        }
-    }
-
     private void initializeSelectedImageLinkedMap(String[] names) {
         HashMap<String, Integer> nameToIndexMap = new HashMap<>();
         for (String name : names) {
@@ -289,66 +273,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         currentIndex = topIndex;
         updateFieldAllShown();
         showImages(imagesAdded);
-    }
-
-    public void selectFiveRandomly() {
-        int numberOfUnselected = getNumberOfUnselectedBelowForLinkedMap(currentIndex);
-        log.debug("number of unselected below " + currentIndex + " = " + numberOfUnselected);
-        int numberOfSelectable = Math.min(5, numberOfUnselected);
-        int numberStillAllowed = maxSelectionAllowed - selectedImageMap.size();
-        int topIndex = Math.min(numberOfSelectable, numberStillAllowed);
-        for (int i = 0; i < topIndex; ++i) {
-            int n = getNextIndex();
-            Image imageToAdd = imagesToShow.get(n);
-            selectedImageMap.put(n, imageToAdd);
-            log.debug("new image selected: " + imageToAdd.getImageName());
-        }
-
-        showSelectedImages();
-    }
-
-    private int getNumberOfUnselectedBelowForTreeMap(int index) {
-        int n = index;
-        for (int key : selectedImageMap.keySet()) {
-            if (key >= index) {
-                break;
-            }
-            --n;
-        }
-        return n;
-    }
-
-    private int getNumberOfUnselectedBelowForLinkedMap(int index) {
-        int n = index;
-        for (int key : selectedImageMap.keySet()) {
-            if (key >= index) {
-                continue;
-            }
-            --n;
-        }
-        return n;
-    }
-
-    private int getNextIndex() {
-        int n;
-        do {
-            n = rand.nextInt(currentIndex);
-        } while (selectedImageMap.containsKey(n));
-
-        return n;
-    }
-
-    public void deselectOneRandomly() {
-        int sizeOfSelected = selectedImageMap.size();
-        if (sizeOfSelected == 0) {
-            log.debug("There is no image selected yet!");
-            return;
-        }
-        Integer[] indices = selectedImageMap.keySet().toArray(new Integer[sizeOfSelected]);
-        int randomIndex = indices[rand.nextInt(sizeOfSelected)];
-        Image deselected = selectedImageMap.remove(randomIndex);
-        log.debug("Image deselected: " + deselected.getImageName());
-        showSelectedImages();
     }
 
     public boolean saveAsProperty() {
