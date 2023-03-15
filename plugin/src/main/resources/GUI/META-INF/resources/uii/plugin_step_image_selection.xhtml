@@ -139,8 +139,13 @@
                         
                         <h:commandButton value="Restart" action="#{AktuelleSchritteForm.myPlugin.loadImages}"/>
                          
-                        <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}"/>
+                        <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}">
+                        	<f:ajax render="myform:images-loaded-list1" ></f:ajax>
+                        </h:commandButton>
                         
+                        <!-- 
+                        <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" />
+                        -->
                         <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
                         <h:inputHidden id="all-shown" value="#{AktuelleSchritteForm.myPlugin.allShown}"/>
                     </div>
@@ -167,6 +172,9 @@
                                                     title="#{image.tooltip}"
                                                     jsf:action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"
                                                     onclick="updateYOffset()">
+                                                    <!-- 
+                                                    <f:ajax render="images-selected-list" ></f:ajax>
+                                                    -->
                                                     <ui:fragment rendered="#{image.type == 'image'}">
                                                         <canvas
                                                             class="thumb-canvas"
@@ -174,6 +182,7 @@
                                                             data-image_large="#{image.largeThumbnailUrl}"
                                                             title="#{image.tooltip}"
                                                             id="thumbnail-#{status.index}"></canvas>
+                                                        
 
                                                     </ui:fragment>
                                                     <!-- 3D OBJECT -->
@@ -247,6 +256,9 @@
                                                     title="#{image.tooltip}"
                                                     jsf:action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName, status.index)}"
                                                     onclick="updateYOffset()">
+                                                    <!-- 
+                                                    <f:ajax render="myform:images-loaded-list1" ></f:ajax>
+                                                    -->
                                                     <ui:fragment rendered="#{image.type == 'image'}">
                                                         <canvas
                                                             class="thumb-canvas"
@@ -329,7 +341,7 @@
         
             window.onload = function() {
                 loadImages();
-                window.scrollTo(0, lastYOffsetElement.value);
+                //window.scrollTo(0, lastYOffsetElement.value);
             }
         
             $( document ).ready(function() {
@@ -351,7 +363,7 @@
             //const box = document.getElementById("myform:images-loaded-list1");
             window.onscroll = () => {     
             	var currentHeight = $(document).height();
-            	if (window.innerHeight + window.pageYOffset > currentHeight){
+            	if (window.innerHeight + window.pageYOffset >= currentHeight){
                 	if (allShownElement.value == "true" || lastYOffsetElement.value == currentHeight){
                 		//alert("all images are shown");
                 		return;
