@@ -215,10 +215,10 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             String[] valueParts = value.split(":");
             names[i] = valueParts[0].replace("\"", "");
         }
-        initializeSelectedImageLinkedMap(names);
+        initializeSelectedImage(names);
     }
 
-    private void initializeSelectedImageLinkedMap(String[] names) {
+    private void initializeSelectedImage(String[] names) {
         HashMap<String, Integer> nameToIndexMap = new HashMap<>();
         for (String name : names) {
             nameToIndexMap.put(name, -1);
@@ -242,10 +242,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             }
             selectedImageMap.put(index, images.get(index));
         }
-    }
-
-    private int getIndexOfImage(String name) {
-        return getIndexOfImage(name, -1);
     }
 
     private int getIndexOfImage(String name, int start) {
@@ -355,13 +351,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             selectedImageMap.put(index, image);
             log.debug("new image selected: " + name);
         }
-    }
-
-    public void deselectImage(String name) {
-        int index = getIndexOfImage(name);
-        Image deselected = selectedImageMap.remove(index);
-        log.debug("Image deselected: " + deselected.getImageName());
-        showSelectedImages();
     }
 
     public void deselectImage( int order) {
