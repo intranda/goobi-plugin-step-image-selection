@@ -105,6 +105,9 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     private static StorageProviderInterface storageProvider = StorageProvider.getInstance();
 
+    /**
+     * initialize important fields
+     */
     @Override
     public void initialize(Step step, String returnPath) {
         this.returnPath = returnPath;
@@ -144,6 +147,16 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     }
 
+    /**
+     * get the full path to the image folder
+     * 
+     * @param process Goobi process
+     * @param folderName configured folder name
+     * @return the full path to the image folder if it exists, null otherwise
+     * @throws IOException
+     * @throws SwapException
+     * @throws DAOException
+     */
     private Path initializeFolderPath(Process process, String folderName) throws IOException, SwapException, DAOException {
         String folder = process.getConfiguredImageFolder(folderName);
         if (StringUtils.isBlank(folder)) {
@@ -153,6 +166,14 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         return Path.of(folder);
     }
 
+    /**
+     * initialize the field images
+     * 
+     * @param folderPath full path to the image folder
+     * @throws IOException
+     * @throws SwapException
+     * @throws DAOException
+     */
     private void initializeImages(Path folderPath) throws IOException, SwapException, DAOException {
         if (folderPath == null) {
             log.debug("There are no images available for NULL!");
@@ -171,12 +192,18 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         imagesFirstLoad = images.subList(0, topIndex);
     }
 
+    /**
+     * load images in the beginning
+     */
     public void loadImages() {
         loadFirstImages();
         readSelectedFromJson();
         showSelectedImages();
     }
 
+    /**
+     * load the heading images
+     */
     public void loadFirstImages() {
         int topIndex = imagesFirstLoad.size();
         log.debug("The first " + topIndex + " imges in " + folderName + " will be shown:");
@@ -186,10 +213,16 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         showImages(imagesToShow);
     }
 
+    /**
+     * update the status whether all images are shown
+     */
     private void updateFieldAllShown() {
         allShown = images.size() == imagesToShow.size();
     }
 
+    /**
+     * read the information of selected Images from Json
+     */
     private void readSelectedFromJson() {
         selectedImageMap = new LinkedHashMap<>();
         setUpProcesspropertyToSave(process.getId(), PROPERTY_TITLE);
@@ -215,10 +248,15 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             String[] valueParts = value.split(":");
             names[i] = valueParts[0].replace("\"", "");
         }
-        initializeSelectedImage(names);
+        initializeSelectedImageMap(names);
     }
 
-    private void initializeSelectedImage(String[] names) {
+    /**
+     * initialize the field selectedImageMap
+     * 
+     * @param names names of Images that shall be stored into this map
+     */
+    private void initializeSelectedImageMap(String[] names) {
         HashMap<String, Integer> nameToIndexMap = new HashMap<>();
         for (String name : names) {
             nameToIndexMap.put(name, -1);
@@ -244,8 +282,15 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         }
     }
 
-    private int getIndexOfImage(String name, int start) {
-        for (int i = start + 1; i < images.size(); ++i) {
+    /**
+     * get the index of the image among all images
+     * 
+     * @param name the name of the image
+     * @param indexOfLast the index of the last found Image. The search starts from its next one. Set it to -1 to start from the beginning.
+     * @return the index of the image among all images
+     */
+    private int getIndexOfImage(String name, int indexOfLast) {
+        for (int i = indexOfLast + 1; i < images.size(); ++i) {
             Image image = images.get(i);
             if (name.equals(image.getImageName())) {
                 return i;
@@ -254,6 +299,9 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         return -1;
     }
 
+    /**
+     * load more images
+     */
     public void loadMoreImages() {
         int topIndex = Math.min(currentIndex + defaultNumberToAdd, images.size());
 
@@ -271,6 +319,11 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         showImages(imagesAdded);
     }
 
+    /**
+     * save the current choice as a process property
+     * 
+     * @return true if the property is successfully saved, false otherwise
+     */
     public boolean saveAsProperty() {
         if (selectedImageMap.size() < minSelectionAllowed) {
             log.debug("Cannot save property. At least " + minSelectionAllowed + " should be selected.");
@@ -285,6 +338,12 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         return true;
     }
 
+    /**
+     * find the process property, or create one if none is found
+     * 
+     * @param processId id of the process
+     * @param title title of the property
+     */
     private void setUpProcesspropertyToSave(int processId, String title) {
         if (property != null) {
             // already initialized
@@ -303,6 +362,11 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         property.setTitel(title);
     }
 
+    /**
+     * create the Json string used as value for the process property
+     * 
+     * @return the Json string with keys being the names of selected images, and values being their urls
+     */
     private String createJsonOfSelectedImages() {
         StringBuilder sb = new StringBuilder("{");
         Collection<Image> selectedImages = selectedImageMap.values();
@@ -320,6 +384,11 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         return sb.toString();
     }
 
+    /**
+     * print information of all shown images to the log
+     * 
+     * @param newImagesToShow List of Images that were not shown yet
+     */
     private void showImages(List<Image> newImagesToShow) {
         log.debug("The number of new images to show is " + newImagesToShow.size());
         for (Image image : newImagesToShow) {
@@ -328,6 +397,9 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         log.debug("The number of all images shown is " + currentIndex);
     }
 
+    /**
+     * print information of all selected images to the log
+     */
     private void showSelectedImages() {
         Collection<Image> selectedImages = selectedImageMap.values();
         for (Image image : selectedImages) {
@@ -336,10 +408,20 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         log.debug("The number of selected images is " + selectedImages.size());
     }
 
+    /**
+     * 
+     * @return a list of selected Images
+     */
     public Collection<Image> getImagesSelected() {
         return selectedImageMap.values();
     }
 
+    /**
+     * select an image
+     * 
+     * @param name name of the image that is selected
+     * @param startIndex a probably true index of the image among all images, search will start there for efficiency
+     */
     public void selectImage(String name, int startIndex) {
         if (selectedImageMap.size() == maxSelectionAllowed) {
             log.debug("Cannot select more since the maximum number allowed " + maxSelectionAllowed + " is already reached.");
@@ -353,6 +435,11 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         }
     }
 
+    /**
+     * deselect an image
+     * 
+     * @param order the index of the image among all selected images
+     */
     public void deselectImage( int order) {
         Set<Integer> keys = selectedImageMap.keySet();
         Integer[] selectedIndices = keys.toArray(new Integer[keys.size()]);
