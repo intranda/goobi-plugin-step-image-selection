@@ -83,10 +83,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     @Getter
     private List<Image> imagesToShow = new ArrayList<>();
-    //    private List<Image> imagesSelected = new ArrayList<>();
 
-    //    private HashSet<Integer> selectedIndices = new HashSet<>();
-    //    private Map<Integer, Image> selectedImageMap = new TreeMap<>();
     private Map<Integer, Image> selectedImageMap = new LinkedHashMap<>();
 
     @Getter
@@ -109,11 +106,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     private static Random rand = new Random();
     private static StorageProviderInterface storageProvider = StorageProvider.getInstance();
-
-    //    public List<String> getImages() {
-    //        //        return images.stream().forEach(Path::toString).collect(Collectors.toList()l);
-    //        return images.stream().map(Path::toString).collect(Collectors.toList());
-    //    }
 
     @Override
     public void initialize(Step step, String returnPath) {
@@ -201,7 +193,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     private void readSelectedFromJson() {
-        //        selectedImageMap = new TreeMap<>();
         selectedImageMap = new LinkedHashMap<>();
         setUpProcesspropertyToSave(process.getId(), PROPERTY_TITLE);
 
@@ -226,12 +217,10 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             String[] valueParts = value.split(":");
             names[i] = valueParts[0].replace("\"", "");
         }
-        //        initializeSelectedImageTreeMap(names);
         initializeSelectedImageLinkedMap(names);
     }
 
     private void initializeSelectedImageTreeMap(String[] names) {
-        //        selectedImageMap = new TreeMap<>();
         int index;
         int lastIndex = -1; // index of the last found image
         for (String name : names) {
@@ -246,7 +235,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     private void initializeSelectedImageLinkedMap(String[] names) {
-        //        selectedImageMap = new LinkedHashMap<>();
         HashMap<String, Integer> nameToIndexMap = new HashMap<>();
         for (String name : names) {
             nameToIndexMap.put(name, -1);
@@ -304,7 +292,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     public void selectFiveRandomly() {
-        //        int numberOfUnselected = getNumberOfUnselectedBelowForTreeMap(currentIndex);
         int numberOfUnselected = getNumberOfUnselectedBelowForLinkedMap(currentIndex);
         log.debug("number of unselected below " + currentIndex + " = " + numberOfUnselected);
         int numberOfSelectable = Math.min(5, numberOfUnselected);
@@ -314,7 +301,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             int n = getNextIndex();
             Image imageToAdd = imagesToShow.get(n);
             selectedImageMap.put(n, imageToAdd);
-            //            imagesSelected.add(imageToAdd);
             log.debug("new image selected: " + imageToAdd.getImageName());
         }
 
@@ -362,21 +348,10 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         int randomIndex = indices[rand.nextInt(sizeOfSelected)];
         Image deselected = selectedImageMap.remove(randomIndex);
         log.debug("Image deselected: " + deselected.getImageName());
-        //        imagesSelected.remove(deselected);
         showSelectedImages();
     }
 
     public boolean saveAsProperty() {
-        //        List<Processproperty> properties = process.getEigenschaftenList();
-        //        for (Processproperty property : properties) {
-        //            log.debug("property.toString() = " + property.toString());
-        //            log.debug("property.getTitel() = " + property.getTitel());
-        //            log.debug("property.getNormalizedTitle() = " + property.getNormalizedTitle());
-        //            log.debug("property.getWert() = " + property.getWert());
-        //            log.debug("property.getNormalizedValue() = " + property.getNormalizedValue());
-        //            log.debug("property.getProcessId() = " + property.getProcessId());
-        //            log.debug("property.getId() = " + property.getId());
-        //        }
         if (selectedImageMap.size() < minSelectionAllowed) {
             log.debug("Cannot save property. At least " + minSelectionAllowed + " should be selected.");
             return false;
@@ -465,7 +440,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         showSelectedImages();
     }
 
-    public void deselectImage(int order) {
+    public void deselectImage( int order) {
         Set<Integer> keys = selectedImageMap.keySet();
         Integer[] selectedIndices = keys.toArray(new Integer[keys.size()]);
         int index = selectedIndices[order];
