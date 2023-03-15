@@ -16,7 +16,74 @@
  * Temple Place, Suite 330, Boston, MA 02111-1307 USA
  * 
  -->
-<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://xmlns.jcp.org/jsf/facelets" xmlns:c="http://java.sun.com/jsp/jstl/core" xmlns:h="http://xmlns.jcp.org/jsf/html" xmlns:f="http://xmlns.jcp.org/jsf/core" xmlns:o="http://omnifaces.org/ui" xmlns:of="http://omnifaces.org/functions" template="/uii/template/template.html" xmlns:x="http://myfaces.apache.org/tomahawk" xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:ui="http://xmlns.jcp.org/jsf/facelets" 
+    xmlns:c="http://java.sun.com/jsp/jstl/core" 
+    xmlns:h="http://xmlns.jcp.org/jsf/html" 
+    xmlns:f="http://xmlns.jcp.org/jsf/core" 
+    xmlns:o="http://omnifaces.org/ui" 
+    xmlns:of="http://omnifaces.org/functions" 
+    template="/uii/template/template.html" 
+    xmlns:x="http://myfaces.apache.org/tomahawk" 
+    xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
+    xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+    <style>
+    /* Thumbnails */
+    .goobi-thumbnail {
+        float: left;
+        margin: 7px;
+        width: #{AktuelleSchritteForm.myPlugin.thumbnailSize +2}px;
+        height: #{AktuelleSchritteForm.myPlugin.thumbnailSize + 55}px;
+    }
+    .goobi-thumbnail .goobi-thumbnail-image {
+        float: left;
+        width: 100%;
+        min-height: 100px;
+        overflow: hidden;
+        max-height: #{AktuelleSchritteForm.myPlugin.thumbnailSize +2}px;
+    }
+    </style>
+    <script
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/reactiveX/rx.lite.min.js"></script>
+    <script
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/q-promises/q.min.js"></script>
+
+    <script
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/openseadragon/openseadragon.min.js"></script>
+    <script
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/openseadragon/openseadragon-viewerinputhook.js"></script>
+
+    <!-- 3D-Models -->
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/three.min.js"></script>
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/OBJLoader.js"></script>
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/MTLLoader.js"></script>
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/PLYLoader.js"></script>
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/STLLoader.js"></script>
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/FBXLoader.js"></script>
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/TDSLoader.js"></script>
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/DRACOLoader.js"></script>
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/loaders/GLTFLoader.js"></script>
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/controls/OrbitControls.js"></script>
+    <script type="text/javascript"
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/three/dependencies/inflate.min.js"></script>
+    <script
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/x3dom/x3dom.js"></script>
+
+    <script
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/imageView.min.js"></script>
+    <script
+        src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/objectView.min.js"></script>
 
     <ui:param name="myPageTitle" value="#{msgs.plugin}: #{msgs[('plugin_').concat(AktuelleSchritteForm.myPlugin.title)]}" />
 
@@ -43,11 +110,16 @@
     	<script src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/imageView.min.js"></script>
     
         <h:form id="myform">
-            <div class="box box-color lightgrey box-bordered">
+            
+            
+            <!-- BOX FOR ALL AVAILABLE IMAGES -->
+            <div class="box box-color lightgrey box-bordered col-sm-8">
+                
+                <!-- BOX HEAD -->
                 <div class="box-title">
                     <h3>
                         <i class="fa fa-puzzle-piece" />
-                        <h:outputText id="id9a" value="#{AktuelleSchritteForm.myPlugin.step.titel}" />
+                        <h:outputText value="#{msgs.plugin_intranda_step_image_selection_availableImages}" />
                     </h3>
                     <div class="actions">
                     	<h:commandLink id="id10" action="#{NavigationForm.Reload}" styleClass="btn btn-mini">
@@ -67,81 +139,162 @@
                         
                         <h:commandButton value="Restart" action="#{AktuelleSchritteForm.myPlugin.loadImages}"/>
                         <h:commandButton value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}"/>
-                        <!-- 
-                        <h:commandButton value="Select 5 More" action="#{AktuelleSchritteForm.myPlugin.selectFiveRandomly}"/>
-                        <h:commandButton value="Delete 1 More" action="#{AktuelleSchritteForm.myPlugin.deselectOneRandomly}"/>
-                        -->
-                        <!-- 
-                        <h:commandButton value="Save As Property" action="#{AktuelleSchritteForm.myPlugin.saveAsProperty}"/>
-                        -->
+                    </div>
+                </div>
+                <!-- // BOX HEAD -->
+
+                <!-- CONTENT AREA -->
+                <div class="box-content">
+					<div class="row">
+					    
+                        <!-- AVAILABLE IMAGES -->
+                        <div id="images-loaded">
+							<h:panelGroup layout="block" id="images-loaded-list1">
+								<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
+									<div
+                                        class="goobi-thumbnail"
+                                        dir="auto">
+                                        <div class="goobi-thumbnail-image">
+
+                                            <div class="thumb">
+                                                <button
+                                                    jsf:id="imageClick1"
+                                                    class="button-no-style"
+                                                    title="#{image.tooltip}"
+                                                    jsf:action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}">
+                                                    <ui:fragment rendered="#{image.type == 'image'}">
+                                                        <canvas
+                                                            class="thumb-canvas"
+                                                            data-image_small="#{image.thumbnailUrl}"
+                                                            data-image_large="#{image.largeThumbnailUrl}"
+                                                            title="#{image.tooltip}"
+                                                            id="thumbnail-#{status.index}"></canvas>
+
+                                                    </ui:fragment>
+                                                    <!-- 3D OBJECT -->
+                                                    <ui:fragment
+                                                        rendered="#{image.type == 'object' or image.type == 'x3dom'}">
+                                                        <img
+                                                            class="thumbnails__thumb-placeholder"
+                                                            src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/goobi_3d_object_placeholder.png" />
+                                                    </ui:fragment>
+                                                    <!-- PLACEHOLDER -->
+                                                    <ui:fragment
+                                                        rendered="#{image.type != 'image' and image.type != 'object' and  image.type != 'x3dom'}">
+                                                        <img
+                                                            class="thumbnails__thumb-placeholder"
+                                                            src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/thumbnail-placeholder.png" />
+                                                    </ui:fragment>
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                        <div class="goobi-thumbnail-caption">
+                                            <h:outputText value="#{image.imageName}" />
+                                        </div>
+                                    </div>
+                                </ui:repeat>
+							</h:panelGroup>
+						</div>
+						<!-- // AVAILABLE IMAGES -->
+							
+					</div>
+				</div>
+                <!-- // CONTENT AREA -->
+            </div>
+            <!-- // BOX FOR ALL AVAILABLE IMAGES -->
+            
+            
+            
+            
+            
+            
+            <!-- BOX FOR SELECTED IMAGES -->
+            <div class="box box-color orange box-bordered col-sm-4">
+                
+                <!-- BOX HEAD -->
+                <div class="box-title">
+                    <h3>
+                        <i class="fa fa-puzzle-piece" />
+                        <h:outputText value="#{msgs.plugin_intranda_step_image_selection_selectedImages}" />
+                    </h3>
+                </div>
+                <!-- // BOX HEAD -->
+
+                <!-- CONTENT AREA -->
+                <div class="box-content">
+                    <div class="row">
+                        <!-- SELECTED IMAGES -->
+                        <div id="images-selected">
+                            <div id="images-selected-list">
+                                
+                                <!-- RUN THROUGH ALL SELECTED IMAGES -->
+                                <ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesSelected}">
+                                    <div
+                                        class="goobi-thumbnail"
+                                        dir="auto">
+                                        <div class="goobi-thumbnail-image">
+
+                                            <div class="thumb">
+                                                <button
+                                                    jsf:id="imageClick2"
+                                                    class="button-no-style"
+                                                    title="#{image.tooltip}"
+                                                    jsf:action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName, status.index)}">
+                                                    <ui:fragment rendered="#{image.type == 'image'}">
+                                                        <canvas
+                                                            class="thumb-canvas"
+                                                            data-image_small="#{image.thumbnailUrl}"
+                                                            data-image_large="#{image.largeThumbnailUrl}"
+                                                            title="#{image.tooltip}"
+                                                            id="thumbnail-#{status.index}"></canvas>
+
+                                                    </ui:fragment>
+                                                    <!-- 3D OBJECT -->
+                                                    <ui:fragment
+                                                        rendered="#{image.type == 'object' or image.type == 'x3dom'}">
+                                                        <img
+                                                            class="thumbnails__thumb-placeholder"
+                                                            src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/goobi_3d_object_placeholder.png" />
+                                                    </ui:fragment>
+                                                    <!-- PLACEHOLDER -->
+                                                    <ui:fragment
+                                                        rendered="#{image.type != 'image' and image.type != 'object' and  image.type != 'x3dom'}">
+                                                        <img
+                                                            class="thumbnails__thumb-placeholder"
+                                                            src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/thumbnail-placeholder.png" />
+                                                    </ui:fragment>
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                        <div class="goobi-thumbnail-caption">
+                                            <h:outputText value="#{image.imageName}" />
+                                        </div>
+                                    </div>
+
+                                </ui:repeat>
+                                <!-- // RUN THROUGH ALL SELECTED IMAGES -->
+                                
+                            </div>
+                            
+                        </div>
+                        <!-- // SELECTED IMAGES -->
                         
                     </div>
                 </div>
+                <!-- // CONTENT AREA -->
 
-                <div class="box-content">
-					
-					<h:panelGroup id="actionform" styleClass="col-sm-12">
-						<div class="row">
-							<h:form>
-								<!-- hello step plugin: #{AktuelleSchritteForm.myPlugin.value} -->
-								<!-- 
-								<ui:repeat var="image" value="#{AktuelleSchritteForm.myPlugin.images}">
-								
-									#{image.objectUrl}
 
-								 	<h:graphicImage value="#{image.thumbnailUrl}" />
-								 
-	
-								 	
-								 	<br/>
-								 
-								</ui:repeat>
-								-->
-								<div id="images-selected">
-									<h3>
-										<h:outputText value="#{AktuelleSchritteForm.myPlugin.selectedTitle}" />
-									</h3>
-									<hr/>
-									<div id="images-selected-list">
-										<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesSelected}">
-											<!-- 
-											<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName)}"/>
-											-->
-											<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName, status.index)}" />
-										</ui:repeat>
-									</div>
-									<div id="save-property-button">
-										<h:commandButton value="Save As Property" action="#{AktuelleSchritteForm.myPlugin.saveAsProperty}"/>
-									</div>
-								</div>
-								
-								<div id="images-loaded">
-									<h3>
-										<h:outputText value="#{AktuelleSchritteForm.myPlugin.loadedTitle}" />
-									</h3>
-									<hr/>
-									<h:panelGroup layout="block" id="images-loaded-list">
-										<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
-											<div>
-												<h:commandButton value="#{image.imageName}" action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"/>
-											</div>
-										</ui:repeat>
-									</h:panelGroup>
-								</div>
-								
-								
-								
-							</h:form>
-						</div>
-						
-					</h:panelGroup>
-					
-                </div>
-
+                <!-- BUTTONS -->
                 <div class="form-actions">
-
+                    
+                    <!-- BUTTON TO SAVE PROPERTY -->
+                    <h:commandButton value="Save As Property" action="#{AktuelleSchritteForm.myPlugin.saveAsProperty}"/>
+                     <!-- // BUTTON TO SAVE PROPERTY -->
+                     
                     <!-- Save and finish the task -->
-					<h:commandLink styleClass="btn btn-green font-size-s" id="finishAndClose" rendered="#{NavigationForm.uiStatus.pluginSimulation != true and AktuelleSchritteForm.myPlugin.allowTaskFinishButtons == true}" action="#{AktuelleSchritteForm.SchrittDurchBenutzerAbschliessen}">
+                    <h:commandLink styleClass="btn btn-green font-size-s" id="finishAndClose" rendered="#{NavigationForm.uiStatus.pluginSimulation != true and AktuelleSchritteForm.myPlugin.allowTaskFinishButtons == true}" action="#{AktuelleSchritteForm.SchrittDurchBenutzerAbschliessen}">
                         <i class="fa fa-check margin-right-5"></i>
                         <h:outputText value="#{msgs.task_leavePluginAndFinishTask}" />
                         <x:updateActionListener property="#{NavigationForm.uiStatus.pluginSimulation}" value="#{false}" />
@@ -155,11 +308,44 @@
                     </h:commandLink>
 
                 </div>
+                <!-- // BUTTONS -->
 
             </div>
-
+            <!-- // BOX FOR SELECTED IMAGES -->
+            
         </h:form>
 
+
+        <script type="text/javascript">
+            window.onload = function() {
+                loadImages();
+            }
+            
+            function loadThumbnails() {
+                var height = parseInt('#{AktuelleSchritteForm.myPlugin.thumbnailSize}');
+                if (height) {
+                    $('.goobi-thumbnail-image').css('height', (height + 25) + 'px');
+                    $('.goobi-thumbnail-image .thumb').css('max-height', height + 'px');
+                    $('.goobi-thumbnail-image .thumb canvas').css('max-height', height + 'px');
+                    $('.goobi-thumbnail-image').css('max-width', (height) + 'px');
+                }
+            }
+        
+            $( document ).ready(function() {
+                loadThumbnails();
+            });
+        
+            jsf.ajax.addOnEvent(function(data) {
+                var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
+                switch (ajaxstatus) {
+                    case "success": // This is called when ajax response is successfully processed.
+                        loadImages();
+                        loadThumbnails();
+                        break;
+                    }
+            });
+        </script>
+    
     </ui:define>
 
 </ui:composition>

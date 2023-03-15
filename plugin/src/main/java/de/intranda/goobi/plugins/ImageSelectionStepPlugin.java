@@ -69,11 +69,8 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     private String folderName;
 
     private Process process;
-    
-    private static final String PROPERTY_TITLE = "plugin_intranda_step_image_selection";
 
-    private static final String IMAGES_LOADED_TITLE = "Images Loaded";
-    private static final String IMAGES_SELECTED_TITLE = "Images Selected";
+    private static final String PROPERTY_TITLE = "plugin_intranda_step_image_selection";
 
     private int currentIndex = 0;
 
@@ -91,6 +88,8 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     //    private Map<Integer, Image> selectedImageMap = new TreeMap<>();
     private Map<Integer, Image> selectedImageMap = new LinkedHashMap<>();
 
+    @Getter
+    private int thumbnailSize = 200;
     private int defaultNumberToLoad;
     private int defaultNumberToAdd;
 
@@ -106,7 +105,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     //        //        return images.stream().forEach(Path::toString).collect(Collectors.toList()l);
     //        return images.stream().map(Path::toString).collect(Collectors.toList());
     //    }
-
 
     @Override
     public void initialize(Step step, String returnPath) {
@@ -139,7 +137,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
             // initialize images
             initializeImages(folderPath);
-            
+
         } catch (IOException | SwapException | DAOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -459,14 +457,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         Image deselected = selectedImageMap.remove(index);
         log.debug("Image deselected: " + deselected.getImageName());
         showSelectedImages();
-    }
-
-    public String getLoadedTitle() {
-        return IMAGES_LOADED_TITLE;
-    }
-
-    public String getSelectedTitle() {
-        return IMAGES_SELECTED_TITLE;
     }
 
     @Override
