@@ -138,9 +138,9 @@
                         </h:commandLink>
                         
                         <h:commandButton value="Restart" action="#{AktuelleSchritteForm.myPlugin.loadImages}"/>
-                        <!-- 
+                         
                         <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}"/>
-                        -->
+                        
                         <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
                         <h:inputHidden id="all-shown" value="#{AktuelleSchritteForm.myPlugin.allShown}"/>
                     </div>
@@ -165,7 +165,8 @@
                                                     jsf:id="imageClick1"
                                                     class="button-no-style"
                                                     title="#{image.tooltip}"
-                                                    jsf:action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}">
+                                                    jsf:action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"
+                                                    onclick="updateYOffset()">
                                                     <ui:fragment rendered="#{image.type == 'image'}">
                                                         <canvas
                                                             class="thumb-canvas"
@@ -244,7 +245,8 @@
                                                     jsf:id="imageClick2"
                                                     class="button-no-style"
                                                     title="#{image.tooltip}"
-                                                    jsf:action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName, status.index)}">
+                                                    jsf:action="#{AktuelleSchritteForm.myPlugin.deselectImage(image.imageName, status.index)}"
+                                                    onclick="updateYOffset()">
                                                     <ui:fragment rendered="#{image.type == 'image'}">
                                                         <canvas
                                                             class="thumb-canvas"
@@ -369,6 +371,15 @@
                     $('.goobi-thumbnail-image .thumb canvas').css('max-height', height + 'px');
                     $('.goobi-thumbnail-image').css('max-width', (height) + 'px');
                 }
+            }
+            
+            function updateYOffset(){
+            	//alert("lastYOffset = " + lastYOffsetElement.value);
+            	//alert("window.screenY = " + window.screenY);
+            	//alert("window.pageYOffset = " + window.pageYOffset);
+            	var currentHeight = window.pageYOffset;
+            	//var currentHeight = window.screenY + window.pageYOffset;
+            	lastYOffsetElement.value = currentHeight;
             }
         </script>
     
