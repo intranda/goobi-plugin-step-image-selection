@@ -50,6 +50,7 @@ import de.sub.goobi.helper.exceptions.SwapException;
 import de.sub.goobi.metadaten.Image;
 import de.sub.goobi.persistence.managers.PropertyManager;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import net.xeoh.plugins.base.annotations.PluginImplementation;
 
@@ -95,6 +96,14 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     private int maxSelectionAllowed;
     private int minSelectionAllowed;
+
+    @Getter
+    @Setter
+    private int lastYOffset = 0;
+
+    @Getter
+    @Setter
+    private boolean allShown = false;
 
     private Processproperty property = null;
 
@@ -183,7 +192,12 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         log.debug("The first " + topIndex + " imges in " + folderName + " will be shown:");
         imagesToShow = new ArrayList<>(imagesFirstLoad);
         currentIndex = topIndex;
+        updateFieldAllShown();
         showImages(imagesToShow);
+    }
+
+    private void updateFieldAllShown() {
+        allShown = images.size() == imagesToShow.size();
     }
 
     private void readSelectedFromJson() {
@@ -285,6 +299,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         }
 
         currentIndex = topIndex;
+        updateFieldAllShown();
         showImages(imagesAdded);
     }
 

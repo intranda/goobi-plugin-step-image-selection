@@ -138,7 +138,11 @@
                         </h:commandLink>
                         
                         <h:commandButton value="Restart" action="#{AktuelleSchritteForm.myPlugin.loadImages}"/>
-                        <h:commandButton value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}"/>
+                        <!-- 
+                        <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}"/>
+                        -->
+                        <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
+                        <h:inputHidden id="all-shown" value="#{AktuelleSchritteForm.myPlugin.allShown}"/>
                     </div>
                 </div>
                 <!-- // BOX HEAD -->
@@ -317,10 +321,46 @@
 
 
         <script type="text/javascript">
+        
+        	var lastYOffsetElement = document.getElementById("myform:last-y-offset");
+        	var allShownElement = document.getElementById("myform:all-shown");
+        
             window.onload = function() {
                 loadImages();
+                window.scrollTo(0, lastYOffsetElement.value);
             }
+        
+            $( document ).ready(function() {
+                loadThumbnails();
+            });
+        
+            /*
+             jsf.ajax.addOnEvent((data) => {
+                var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
+                switch (ajaxstatus) {
+                    case "success": // This is called when ajax response is successfully processed.
+                        loadImages();
+                        loadThumbnails();
+                        break;
+                    }
+            }); 
+            */
             
+            //const box = document.getElementById("myform:images-loaded-list1");
+            window.onscroll = () => {     
+            	var currentHeight = $(document).height();
+            	if (window.innerHeight + window.pageYOffset > currentHeight){
+                	if (allShownElement.value == "true" || lastYOffsetElement.value == currentHeight){
+                		//alert("all images are shown");
+                		return;
+                	}
+                	//alert("bottom");
+            		lastYOffsetElement.value = currentHeight;
+            		document.getElementById("myform:load-more-button").click();
+            	}
+            };
+            
+            /* ======= FUNCTIONS ======= */
             function loadThumbnails() {
                 var height = parseInt('#{AktuelleSchritteForm.myPlugin.thumbnailSize}');
                 if (height) {
@@ -330,20 +370,6 @@
                     $('.goobi-thumbnail-image').css('max-width', (height) + 'px');
                 }
             }
-        
-            $( document ).ready(function() {
-                loadThumbnails();
-            });
-        
-            jsf.ajax.addOnEvent(function(data) {
-                var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
-                switch (ajaxstatus) {
-                    case "success": // This is called when ajax response is successfully processed.
-                        loadImages();
-                        loadThumbnails();
-                        break;
-                    }
-            });
         </script>
     
     </ui:define>
