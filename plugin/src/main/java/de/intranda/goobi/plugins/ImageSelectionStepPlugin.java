@@ -465,7 +465,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         showSelectedImages();
     }
 
-    public void deselectImage(String name, int order) {
+    public void deselectImage(int order) {
         Set<Integer> keys = selectedImageMap.keySet();
         Integer[] selectedIndices = keys.toArray(new Integer[keys.size()]);
         int index = selectedIndices[order];
