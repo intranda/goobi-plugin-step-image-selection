@@ -99,6 +99,14 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     @Getter
     @Setter
+    private int selectedIndex = -1;
+
+    @Getter
+    @Setter
+    private int deselectedIndex = -1;
+
+    @Getter
+    @Setter
     private boolean allShown = false;
 
     private Processproperty property = null;
@@ -422,17 +430,39 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      * @param name name of the image that is selected
      * @param startIndex a probably true index of the image among all images, search will start there for efficiency
      */
-    public void selectImage(String name, int startIndex) {
+    //    public void selectImage(String name, int startIndex) {
+    //        if (selectedImageMap.size() == maxSelectionAllowed) {
+    //            log.debug("Cannot select more since the maximum number allowed " + maxSelectionAllowed + " is already reached.");
+    //            return;
+    //        }
+    //        int index = getIndexOfImage(name, startIndex - 1);
+    //        Image image = images.get(index);
+    //        if (!selectedImageMap.containsValue(image)) {
+    //            selectedImageMap.put(index, image);
+    //            log.debug("new image selected: " + name);
+    //        }
+    //    }
+
+    public void selectImage() {
+        log.debug("selectedIndex = " + selectedIndex);
+        //        selectImage(selectedIndex);
+    }
+
+    public void selectImage(int startIndex) {
         if (selectedImageMap.size() == maxSelectionAllowed) {
             log.debug("Cannot select more since the maximum number allowed " + maxSelectionAllowed + " is already reached.");
             return;
         }
-        int index = getIndexOfImage(name, startIndex - 1);
-        Image image = images.get(index);
+        Image image = images.get(startIndex);
         if (!selectedImageMap.containsValue(image)) {
-            selectedImageMap.put(index, image);
-            log.debug("new image selected: " + name);
+            selectedImageMap.put(startIndex, image);
+            log.debug("new image selected: " + image.getImageName());
         }
+    }
+
+    public void deselectImage() {
+        log.debug("deselectedIndex = " + deselectedIndex);
+        //        deselectImage(deselectedIndex);
     }
 
     /**

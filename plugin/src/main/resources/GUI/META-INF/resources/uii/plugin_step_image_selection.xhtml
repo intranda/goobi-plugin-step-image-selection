@@ -143,10 +143,20 @@
                         	<f:ajax render="myform:images-loaded-list1" ></f:ajax>
                         </h:commandButton>
                         
+                        <h:commandButton id="select-image-button" value="Select" action="#{AktuelleSchritteForm.myPlugin.selectImage}" >
+                        	<f:ajax render="images-selected-list" />
+                        </h:commandButton>
+                        
+                        <h:commandButton id="deselect-image-button" value="Deselect" action="#{AktuelleSchritteForm.myPlugin.deselectImage}" >
+                        	<f:ajax render="images-selected-list" />
+                        </h:commandButton>
+                        
                         <!-- 
                         <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" />
                         -->
                         <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
+                        <h:inputHidden id="selected-index" value="{AktuelleSchritteForm.myPlugin.selectedIndex}" />
+                        <h:inputHidden id="deselected-index" value="{AktuelleSchritteForm.myPlugin.deselectedIndex}" />
                         <!-- 
                         <h:inputHidden id="all-shown" value="#{AktuelleSchritteForm.myPlugin.allShown}"/>
                         -->
@@ -155,35 +165,57 @@
                 <!-- // BOX HEAD -->
 
                 <!-- CONTENT AREA -->
-                <div class="box-content">
-					<div class="row">
+                <div class="box-content row"
+                         id="images-loaded-list1"
+                         ondrop="dropToLoaded(event)"
+                         ondragover="allowDrop(event)">
+					<!-- <div class="row"> -->
 					    
                         <!-- AVAILABLE IMAGES -->
-                        <div id="images-loaded">
-							<h:panelGroup layout="block" id="images-loaded-list1">
+                        <!-- <div id="images-loaded"> -->
+                        <!-- 
+							<h:panelGroup layout="block" 
+							                         id="images-loaded-list1"
+							                         ondrop="drop(event)"
+                                                     ondragover="allowDrop(event)">
+                         -->
 								<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
 									<div
+									    id="loaded-thumnail-#{status.index}"
                                         class="goobi-thumbnail"
-                                        dir="auto">
+                                        dir="auto"
+                                        draggable="true" 
+                                        ondragstart="drag(event)">
                                         <div class="goobi-thumbnail-image">
 
                                             <div class="thumb">
+                                            	<!-- 
                                                 <button
                                                     jsf:id="imageClick1"
                                                     class="button-no-style"
                                                     title="#{image.tooltip}"
                                                     jsf:action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"
                                                     onclick="updateYOffset()">
+                                                -->
                                                     <!-- 
                                                     <f:ajax render="images-selected-list" ></f:ajax>
                                                     -->
-                                                    <ui:fragment rendered="#{image.type == 'image'}">
+                                                    <ui:fragment rendered="#{image.type == 'image'}" >
+                                                    <!-- 
                                                         <canvas
                                                             class="thumb-canvas"
                                                             data-image_small="#{image.thumbnailUrl}"
                                                             data-image_large="#{image.largeThumbnailUrl}"
                                                             title="#{image.tooltip}"
                                                             id="thumbnail-#{status.index}"></canvas>
+                                                    -->
+                                                    
+                                                        <canvas
+                                                            class="thumb-canvas"
+                                                            data-image_small="#{image.thumbnailUrl}"
+                                                            data-image_large="#{image.largeThumbnailUrl}"
+                                                            title="#{image.tooltip}"
+                                                            id="thumnail-#{status.index}"></canvas>
                                                         
 
                                                     </ui:fragment>
@@ -201,7 +233,9 @@
                                                             class="thumbnails__thumb-placeholder"
                                                             src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/thumbnail-placeholder.png" />
                                                     </ui:fragment>
+                                                <!--     
                                                 </button>
+                                                -->
                                             </div>
 
                                         </div>
@@ -210,11 +244,13 @@
                                         </div>
                                     </div>
                                 </ui:repeat>
+                            <!-- 
 							</h:panelGroup>
-						</div>
+							-->
+						<!-- </div> -->
 						<!-- // AVAILABLE IMAGES -->
 							
-					</div>
+					<!-- </div> -->
 				</div>
                 <!-- // CONTENT AREA -->
             </div>
@@ -238,36 +274,56 @@
                 <!-- // BOX HEAD -->
 
                 <!-- CONTENT AREA -->
-                <div class="box-content">
-                    <div class="row">
+                <div class="box-content row"
+                        id="images-selected-list"
+                        ondrop="dropToSelected(event)"
+                        ondragover="allowDrop(event)">
+                    <!-- <div class="row"> -->
                         <!-- SELECTED IMAGES -->
-                        <div id="images-selected">
-                            <div id="images-selected-list">
-                                
+                        <!-- <div id="images-selected"> -->
+                        <!-- 
+                            <div id="images-selected-list"
+                                    ondrop="drop(event)"
+                                    ondragover="allowDrop(event)">
+                         -->       
                                 <!-- RUN THROUGH ALL SELECTED IMAGES -->
                                 <ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesSelected}">
                                     <div
+                                        id="selected-thumbnail-#{status.index}"
                                         class="goobi-thumbnail"
-                                        dir="auto">
+                                        dir="auto"
+                                        draggable="true"
+                                        ondragstart="drag(event)">
                                         <div class="goobi-thumbnail-image">
 
                                             <div class="thumb">
+                                                <!-- 
                                                 <button
                                                     jsf:id="imageClick2"
                                                     class="button-no-style"
                                                     title="#{image.tooltip}"
                                                     jsf:action="#{AktuelleSchritteForm.myPlugin.deselectImage(status.index)}"
                                                     onclick="updateYOffset()">
+                                                -->
                                                     <!-- 
                                                     <f:ajax render="myform:images-loaded-list1" ></f:ajax>
                                                     -->
                                                     <ui:fragment rendered="#{image.type == 'image'}">
+                                                        <!-- 
                                                         <canvas
                                                             class="thumb-canvas"
                                                             data-image_small="#{image.thumbnailUrl}"
                                                             data-image_large="#{image.largeThumbnailUrl}"
                                                             title="#{image.tooltip}"
                                                             id="thumbnail-#{status.index}"></canvas>
+                                                        -->
+                                                        <canvas
+                                                            class="thumb-canvas"
+                                                            data-image_small="#{image.thumbnailUrl}"
+                                                            data-image_large="#{image.largeThumbnailUrl}"
+                                                            title="#{image.tooltip}"
+                                                            id="thumnail-#{status.index}"></canvas>
+                                                        
 
                                                     </ui:fragment>
                                                     <!-- 3D OBJECT -->
@@ -284,7 +340,9 @@
                                                             class="thumbnails__thumb-placeholder"
                                                             src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/thumbnail-placeholder.png" />
                                                     </ui:fragment>
+                                                <!--     
                                                 </button>
+                                                -->
                                             </div>
 
                                         </div>
@@ -295,13 +353,13 @@
 
                                 </ui:repeat>
                                 <!-- // RUN THROUGH ALL SELECTED IMAGES -->
-                                
+                            <!--     
                             </div>
-                            
-                        </div>
+                            -->
+                        <!-- </div> -->
                         <!-- // SELECTED IMAGES -->
                         
-                    </div>
+                    <!-- </div> -->
                 </div>
                 <!-- // CONTENT AREA -->
 
@@ -341,6 +399,10 @@
         
         	var lastYOffsetElement = document.getElementById("myform:last-y-offset");
         	//var allShownElement = document.getElementById("myform:all-shown");
+        	var selectedIndexElement = document.getElementById("myform:selected-index");
+        	var deselectedIndexElement = document.getElementById("myform:deselected-index");
+/*         	var selectImageButton = document.getElementById("select-image-button");
+        	var deselectImageButton = document.getElementById("deselect-image-button"); */
         
             window.onload = function() {
                 loadImages();
@@ -393,6 +455,50 @@
             	var currentHeight = window.pageYOffset;
             	//var currentHeight = window.screenY + window.pageYOffset;
             	lastYOffsetElement.value = currentHeight;
+            }
+            
+            function allowDrop(ev){
+            	ev.preventDefault();
+            }
+            
+            function drag(ev){
+            	ev.dataTransfer.setData("text/plain", ev.target.id);
+            	console.log("drag event id = " + ev.target.id);
+            }
+            
+            function dropToLoaded(ev) {
+            	ev.preventDefault();
+            	var data = ev.dataTransfer.getData("text/plain");
+            	console.log("data = " + data);
+            	//ev.target.appendChild(document.getElementById(data));
+            	var chunks = data.split("-");
+            	var source = chunks[0];
+            	var index = chunks[2];
+            	if (source == "selected"){
+            		 console.log("deselecting image with index " + index);
+            		 deselectedIndexElement.value = index;
+            		 document.getElementById("deselect-image-button").click();
+            	} else{
+            		console.log("NOTHING HAPPENS");
+            	}
+            }
+            
+            function dropToSelected(ev){
+            	ev.preventDefault();
+            	var data = ev.dataTransfer.getData("text/plain");
+            	console.log("data = " + data);
+            	//ev.target.appendChild(document.getElementById(data));
+            	var chunks = data.split("-");
+            	var source = chunks[0];
+            	var index = chunks[2];
+            	if (source == "loaded"){
+            		console.log("adding new image with index " + index);
+            		selectedIndexElement.value = index;
+            		document.getElementById("select-image-button").click();
+            	} else {
+            		console.log("reordering selected elements");
+            	}
+
             }
             
         //]]>
