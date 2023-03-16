@@ -108,9 +108,23 @@
 
     <ui:define name="content">
     	<script src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/imageView.min.js"></script>
-    
-        <h:form id="myform">
+    	
+    	<h:form id="hidden-form">
+            <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
+            <h:inputHidden id="selected-index" value="#{AktuelleSchritteForm.myPlugin.selectedIndex}" />
+            <h:inputHidden id="deselected-index" value="#{AktuelleSchritteForm.myPlugin.deselectedIndex}" />
             
+            <h:commandButton id="select-image-button" value="Select" action="#{AktuelleSchritteForm.myPlugin.selectImage}" >
+               	<f:ajax execute="hidden-form:selected-index" render="myform"></f:ajax>
+            </h:commandButton>
+                        
+            <h:commandButton id="deselect-image-button" value="Deselect" action="#{AktuelleSchritteForm.myPlugin.deselectImage}" >
+               	<f:ajax execute="hidden-form:deselected-index" render="myform"></f:ajax>
+            </h:commandButton>
+            
+    	</h:form>
+    
+        <h:form id="myform">           
             
             <!-- BOX FOR ALL AVAILABLE IMAGES -->
             <div class="box box-color lightgrey box-bordered col-sm-8">
@@ -143,23 +157,6 @@
                         	<f:ajax render="myform:images-loaded-list1" ></f:ajax>
                         </h:commandButton>
                         
-                        <h:commandButton id="select-image-button" value="Select" action="#{AktuelleSchritteForm.myPlugin.selectImage}" >
-                        	<f:ajax render="images-selected-list" />
-                        </h:commandButton>
-                        
-                        <h:commandButton id="deselect-image-button" value="Deselect" action="#{AktuelleSchritteForm.myPlugin.deselectImage}" >
-                        	<f:ajax render="images-selected-list" />
-                        </h:commandButton>
-                        
-                        <!-- 
-                        <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" />
-                        -->
-                        <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
-                        <h:inputHidden id="selected-index" value="{AktuelleSchritteForm.myPlugin.selectedIndex}" />
-                        <h:inputHidden id="deselected-index" value="{AktuelleSchritteForm.myPlugin.deselectedIndex}" />
-                        <!-- 
-                        <h:inputHidden id="all-shown" value="#{AktuelleSchritteForm.myPlugin.allShown}"/>
-                        -->
                     </div>
                 </div>
                 <!-- // BOX HEAD -->
@@ -169,97 +166,57 @@
                          id="images-loaded-list1"
                          ondrop="dropToLoaded(event)"
                          ondragover="allowDrop(event)">
-					<!-- <div class="row"> -->
 					    
                         <!-- AVAILABLE IMAGES -->
-                        <!-- <div id="images-loaded"> -->
-                        <!-- 
-							<h:panelGroup layout="block" 
-							                         id="images-loaded-list1"
-							                         ondrop="drop(event)"
-                                                     ondragover="allowDrop(event)">
-                         -->
-								<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
-									<div
-									    id="loaded-thumnail-#{status.index}"
-                                        class="goobi-thumbnail"
-                                        dir="auto"
-                                        draggable="true" 
-                                        ondragstart="drag(event)">
-                                        <div class="goobi-thumbnail-image">
+						<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
+							<div
+							    id="loaded-thumnail-#{status.index}"
+                                class="goobi-thumbnail"
+                                dir="auto"
+                                draggable="true" 
+                                ondragstart="drag(event)">
+                                <div class="goobi-thumbnail-image">
 
-                                            <div class="thumb">
-                                            	<!-- 
-                                                <button
-                                                    jsf:id="imageClick1"
-                                                    class="button-no-style"
-                                                    title="#{image.tooltip}"
-                                                    jsf:action="#{AktuelleSchritteForm.myPlugin.selectImage(image.imageName, status.index)}"
-                                                    onclick="updateYOffset()">
-                                                -->
-                                                    <!-- 
-                                                    <f:ajax render="images-selected-list" ></f:ajax>
-                                                    -->
-                                                    <ui:fragment rendered="#{image.type == 'image'}" >
-                                                    <!-- 
-                                                        <canvas
-                                                            class="thumb-canvas"
-                                                            data-image_small="#{image.thumbnailUrl}"
-                                                            data-image_large="#{image.largeThumbnailUrl}"
-                                                            title="#{image.tooltip}"
-                                                            id="thumbnail-#{status.index}"></canvas>
-                                                    -->
-                                                    
-                                                        <canvas
-                                                            class="thumb-canvas"
-                                                            data-image_small="#{image.thumbnailUrl}"
-                                                            data-image_large="#{image.largeThumbnailUrl}"
-                                                            title="#{image.tooltip}"
-                                                            id="thumnail-#{status.index}"></canvas>
-                                                        
+                                    <div class="thumb">
+                                        <ui:fragment rendered="#{image.type == 'image'}" >                                                  
+                                            <canvas
+                                                  class="thumb-canvas"
+                                                  data-image_small="#{image.thumbnailUrl}"
+                                                  data-image_large="#{image.largeThumbnailUrl}"
+                                                  title="#{image.tooltip}"
+                                                  id="thumnail-#{status.index}">
+                                            </canvas>                                                    
+                                        </ui:fragment>
+                                                  
+                                        <!-- 3D OBJECT -->
+                                        <ui:fragment
+                                            rendered="#{image.type == 'object' or image.type == 'x3dom'}">
+                                            <img
+                                                class="thumbnails__thumb-placeholder"
+                                                src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/goobi_3d_object_placeholder.png" />
+                                        </ui:fragment>
+                                        <!-- PLACEHOLDER -->
+                                        <ui:fragment
+                                            rendered="#{image.type != 'image' and image.type != 'object' and  image.type != 'x3dom'}">
+                                            <img
+                                                class="thumbnails__thumb-placeholder"
+                                                src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/thumbnail-placeholder.png" />
+                                        </ui:fragment>
 
-                                                    </ui:fragment>
-                                                    <!-- 3D OBJECT -->
-                                                    <ui:fragment
-                                                        rendered="#{image.type == 'object' or image.type == 'x3dom'}">
-                                                        <img
-                                                            class="thumbnails__thumb-placeholder"
-                                                            src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/goobi_3d_object_placeholder.png" />
-                                                    </ui:fragment>
-                                                    <!-- PLACEHOLDER -->
-                                                    <ui:fragment
-                                                        rendered="#{image.type != 'image' and image.type != 'object' and  image.type != 'x3dom'}">
-                                                        <img
-                                                            class="thumbnails__thumb-placeholder"
-                                                            src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/thumbnail-placeholder.png" />
-                                                    </ui:fragment>
-                                                <!--     
-                                                </button>
-                                                -->
-                                            </div>
-
-                                        </div>
-                                        <div class="goobi-thumbnail-caption">
-                                            <h:outputText value="#{image.imageName}" />
-                                        </div>
                                     </div>
-                                </ui:repeat>
-                            <!-- 
-							</h:panelGroup>
-							-->
-						<!-- </div> -->
+
+                                </div>
+                                <div class="goobi-thumbnail-caption">
+                                    <h:outputText value="#{image.imageName}" />
+                                </div>
+                            </div>
+                        </ui:repeat>
 						<!-- // AVAILABLE IMAGES -->
 							
-					<!-- </div> -->
-				</div>
+                </div>
                 <!-- // CONTENT AREA -->
             </div>
-            <!-- // BOX FOR ALL AVAILABLE IMAGES -->
-            
-            
-            
-            
-            
+            <!-- // BOX FOR ALL AVAILABLE IMAGES -->        
             
             <!-- BOX FOR SELECTED IMAGES -->
             <div class="box box-color orange box-bordered col-sm-4">
@@ -278,90 +235,56 @@
                         id="images-selected-list"
                         ondrop="dropToSelected(event)"
                         ondragover="allowDrop(event)">
-                    <!-- <div class="row"> -->
-                        <!-- SELECTED IMAGES -->
-                        <!-- <div id="images-selected"> -->
-                        <!-- 
-                            <div id="images-selected-list"
-                                    ondrop="drop(event)"
-                                    ondragover="allowDrop(event)">
-                         -->       
-                                <!-- RUN THROUGH ALL SELECTED IMAGES -->
-                                <ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesSelected}">
-                                    <div
-                                        id="selected-thumbnail-#{status.index}"
-                                        class="goobi-thumbnail"
-                                        dir="auto"
-                                        draggable="true"
-                                        ondragstart="drag(event)">
-                                        <div class="goobi-thumbnail-image">
+                        <!-- SELECTED IMAGES -->  
+                        <!-- RUN THROUGH ALL SELECTED IMAGES -->
+                        <ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesSelected}">
+                            <div
+                                id="selected-thumbnail-#{status.index}"
+                                class="goobi-thumbnail"
+                                dir="auto"
+                                draggable="true"
+                                ondragstart="drag(event)">
+                                <div class="goobi-thumbnail-image">
 
-                                            <div class="thumb">
-                                                <!-- 
-                                                <button
-                                                    jsf:id="imageClick2"
-                                                    class="button-no-style"
-                                                    title="#{image.tooltip}"
-                                                    jsf:action="#{AktuelleSchritteForm.myPlugin.deselectImage(status.index)}"
-                                                    onclick="updateYOffset()">
-                                                -->
-                                                    <!-- 
-                                                    <f:ajax render="myform:images-loaded-list1" ></f:ajax>
-                                                    -->
-                                                    <ui:fragment rendered="#{image.type == 'image'}">
-                                                        <!-- 
-                                                        <canvas
-                                                            class="thumb-canvas"
-                                                            data-image_small="#{image.thumbnailUrl}"
-                                                            data-image_large="#{image.largeThumbnailUrl}"
-                                                            title="#{image.tooltip}"
-                                                            id="thumbnail-#{status.index}"></canvas>
-                                                        -->
-                                                        <canvas
-                                                            class="thumb-canvas"
-                                                            data-image_small="#{image.thumbnailUrl}"
-                                                            data-image_large="#{image.largeThumbnailUrl}"
-                                                            title="#{image.tooltip}"
-                                                            id="thumnail-#{status.index}"></canvas>
-                                                        
-
-                                                    </ui:fragment>
-                                                    <!-- 3D OBJECT -->
-                                                    <ui:fragment
-                                                        rendered="#{image.type == 'object' or image.type == 'x3dom'}">
-                                                        <img
-                                                            class="thumbnails__thumb-placeholder"
-                                                            src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/goobi_3d_object_placeholder.png" />
-                                                    </ui:fragment>
-                                                    <!-- PLACEHOLDER -->
-                                                    <ui:fragment
-                                                        rendered="#{image.type != 'image' and image.type != 'object' and  image.type != 'x3dom'}">
-                                                        <img
-                                                            class="thumbnails__thumb-placeholder"
-                                                            src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/thumbnail-placeholder.png" />
-                                                    </ui:fragment>
-                                                <!--     
-                                                </button>
-                                                -->
-                                            </div>
-
-                                        </div>
-                                        <div class="goobi-thumbnail-caption">
-                                            <h:outputText value="#{image.imageName}" />
-                                        </div>
+                                    <div class="thumb">
+                                        <ui:fragment rendered="#{image.type == 'image'}">
+                                            <canvas
+                                                class="thumb-canvas"
+                                                data-image_small="#{image.thumbnailUrl}"
+                                                data-image_large="#{image.largeThumbnailUrl}"
+                                                title="#{image.tooltip}"
+                                                id="thumnail-#{status.index}">
+                                            </canvas>                                                       
+                                        </ui:fragment>
+                                        
+                                        <!-- 3D OBJECT -->
+                                        <ui:fragment
+                                            rendered="#{image.type == 'object' or image.type == 'x3dom'}">
+                                            <img
+                                                class="thumbnails__thumb-placeholder"
+                                                src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/goobi_3d_object_placeholder.png" />
+                                        </ui:fragment>
+                                        <!-- PLACEHOLDER -->
+                                        <ui:fragment
+                                            rendered="#{image.type != 'image' and image.type != 'object' and  image.type != 'x3dom'}">
+                                            <img
+                                                class="thumbnails__thumb-placeholder"
+                                                src="#{HelperForm.servletPathWithHostAsUrl}/uii/template/img/thumbnail-placeholder.png" />
+                                        </ui:fragment>
                                     </div>
 
-                                </ui:repeat>
-                                <!-- // RUN THROUGH ALL SELECTED IMAGES -->
-                            <!--     
+                                </div>
+                                <div class="goobi-thumbnail-caption">
+                                    <h:outputText value="#{image.imageName}" />
+                                </div>
                             </div>
-                            -->
-                        <!-- </div> -->
+
+                        </ui:repeat>
+                                <!-- // RUN THROUGH ALL SELECTED IMAGES -->
                         <!-- // SELECTED IMAGES -->
                         
-                    <!-- </div> -->
-                </div>
-                <!-- // CONTENT AREA -->
+                    </div>
+                    <!-- // CONTENT AREA -->
 
 
                 <!-- BUTTONS -->
@@ -397,19 +320,19 @@
         <script type="text/javascript">
         //<![CDATA[
         
-        	var lastYOffsetElement = document.getElementById("myform:last-y-offset");
-        	//var allShownElement = document.getElementById("myform:all-shown");
-        	var selectedIndexElement = document.getElementById("myform:selected-index");
-        	var deselectedIndexElement = document.getElementById("myform:deselected-index");
-/*         	var selectImageButton = document.getElementById("select-image-button");
-        	var deselectImageButton = document.getElementById("deselect-image-button"); */
-        
+        	var lastYOffsetElement = document.getElementById("hidden-form:last-y-offset");        	
+        	var selectedIndexElement = document.getElementById("hidden-form:selected-index");
+        	var deselectedIndexElement = document.getElementById("hidden-form:deselected-index");
+        	
+         	var selectImageButton = document.getElementById("hidden-form:select-image-button");
+        	var deselectImageButton = document.getElementById("hidden-form:deselect-image-button"); 
+       
             window.onload = function() {
                 loadImages();
                 //window.scrollTo(0, lastYOffsetElement.value);
             }
         
-            $( document ).ready(function() {
+            $( document ).ready(function() {             
                 loadThumbnails();
             });
         
@@ -475,9 +398,9 @@
             	var source = chunks[0];
             	var index = chunks[2];
             	if (source == "selected"){
-            		 console.log("deselecting image with index " + index);
+            		 console.log("deselecting image with index " + index);     		 
             		 deselectedIndexElement.value = index;
-            		 document.getElementById("deselect-image-button").click();
+            		 deselectImageButton.click();
             	} else{
             		console.log("NOTHING HAPPENS");
             	}
@@ -494,11 +417,10 @@
             	if (source == "loaded"){
             		console.log("adding new image with index " + index);
             		selectedIndexElement.value = index;
-            		document.getElementById("select-image-button").click();
+            		selectImageButton.click();
             	} else {
             		console.log("reordering selected elements");
             	}
-
             }
             
         //]]>

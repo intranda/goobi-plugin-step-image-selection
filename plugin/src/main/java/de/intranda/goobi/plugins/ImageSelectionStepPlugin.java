@@ -425,30 +425,20 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     /**
+     * select the image with index selectedIndex
+     */
+    public void selectImage() {
+        log.debug("selectedIndex = " + selectedIndex);
+        selectImage(selectedIndex);
+    }
+
+    /**
      * select an image
      * 
      * @param name name of the image that is selected
      * @param startIndex a probably true index of the image among all images, search will start there for efficiency
      */
-    //    public void selectImage(String name, int startIndex) {
-    //        if (selectedImageMap.size() == maxSelectionAllowed) {
-    //            log.debug("Cannot select more since the maximum number allowed " + maxSelectionAllowed + " is already reached.");
-    //            return;
-    //        }
-    //        int index = getIndexOfImage(name, startIndex - 1);
-    //        Image image = images.get(index);
-    //        if (!selectedImageMap.containsValue(image)) {
-    //            selectedImageMap.put(index, image);
-    //            log.debug("new image selected: " + name);
-    //        }
-    //    }
-
-    public void selectImage() {
-        log.debug("selectedIndex = " + selectedIndex);
-        //        selectImage(selectedIndex);
-    }
-
-    public void selectImage(int startIndex) {
+    private void selectImage(int startIndex) {
         if (selectedImageMap.size() == maxSelectionAllowed) {
             log.debug("Cannot select more since the maximum number allowed " + maxSelectionAllowed + " is already reached.");
             return;
@@ -460,9 +450,12 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         }
     }
 
+    /**
+     * deselect the image with order deselectedIndex
+     */
     public void deselectImage() {
         log.debug("deselectedIndex = " + deselectedIndex);
-        //        deselectImage(deselectedIndex);
+        deselectImage(deselectedIndex);
     }
 
     /**
@@ -470,7 +463,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      * 
      * @param order the index of the image among all selected images
      */
-    public void deselectImage( int order) {
+    private void deselectImage(int order) {
         Set<Integer> keys = selectedImageMap.keySet();
         Integer[] selectedIndices = keys.toArray(new Integer[keys.size()]);
         int index = selectedIndices[order];
