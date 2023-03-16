@@ -147,7 +147,9 @@
                         <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" />
                         -->
                         <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
+                        <!-- 
                         <h:inputHidden id="all-shown" value="#{AktuelleSchritteForm.myPlugin.allShown}"/>
+                        -->
                     </div>
                 </div>
                 <!-- // BOX HEAD -->
@@ -335,9 +337,10 @@
 
 
         <script type="text/javascript">
+        //<![CDATA[
         
         	var lastYOffsetElement = document.getElementById("myform:last-y-offset");
-        	var allShownElement = document.getElementById("myform:all-shown");
+        	//var allShownElement = document.getElementById("myform:all-shown");
         
             window.onload = function() {
                 loadImages();
@@ -363,14 +366,12 @@
             //const box = document.getElementById("myform:images-loaded-list1");
             window.onscroll = () => {     
             	var currentHeight = $(document).height();
-            	if (window.innerHeight + window.pageYOffset >= currentHeight){
-                	if (allShownElement.value == "true" || lastYOffsetElement.value == currentHeight){
-                		//alert("all images are shown");
-                		return;
+            	if (window.innerHeight + window.pageYOffset >= currentHeight){    		
+            		// load more images ONLY IF it is still able to scroll downwards
+                	if (lastYOffsetElement.value < currentHeight){
+                		lastYOffsetElement.value = currentHeight;
+                		document.getElementById("myform:load-more-button").click();
                 	}
-                	//alert("bottom");
-            		lastYOffsetElement.value = currentHeight;
-            		document.getElementById("myform:load-more-button").click();
             	}
             };
             
@@ -393,6 +394,8 @@
             	//var currentHeight = window.screenY + window.pageYOffset;
             	lastYOffsetElement.value = currentHeight;
             }
+            
+        //]]>
         </script>
     
     </ui:define>
