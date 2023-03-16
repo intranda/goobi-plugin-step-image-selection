@@ -25,11 +25,9 @@ import java.util.Collection;
  */
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
+import org.apache.commons.collections4.map.ListOrderedMap;
 import org.apache.commons.configuration.SubnodeConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.goobi.beans.Process;
@@ -83,7 +81,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     @Getter
     private List<Image> imagesToShow = new ArrayList<>();
 
-    private Map<Integer, Image> selectedImageMap = new LinkedHashMap<>();
+    private ListOrderedMap<Integer, Image> selectedImageMap = new ListOrderedMap<>();
 
     @Getter
     private int thumbnailSize = 200;
@@ -232,7 +230,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      * read the information of selected Images from Json
      */
     private void readSelectedFromJson() {
-        selectedImageMap = new LinkedHashMap<>();
+        selectedImageMap = new ListOrderedMap<>();
         setUpProcesspropertyToSave(process.getId(), PROPERTY_TITLE);
 
         String values = property.getWert();
@@ -464,10 +462,10 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      * @param order the index of the image among all selected images
      */
     private void deselectImage(int order) {
-        Set<Integer> keys = selectedImageMap.keySet();
-        Integer[] selectedIndices = keys.toArray(new Integer[keys.size()]);
-        int index = selectedIndices[order];
-        Image deselected = selectedImageMap.remove(index);
+        // ListOrderedMap provides two kinds of remove:
+        // one accepts an int as index and removes the element at this specified index
+        // the other one accepts an Object as key and removes its mapped value accordingly
+        Image deselected = selectedImageMap.remove(order);
         log.debug("Image deselected: " + deselected.getImageName());
         showSelectedImages();
     }
