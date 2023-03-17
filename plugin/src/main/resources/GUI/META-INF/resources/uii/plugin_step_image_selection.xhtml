@@ -336,6 +336,7 @@
         	var reorderSelectedButton = document.getElementById("hidden-form:reorder-selected-button");
         	
         	var savePropertyButton = document.getElementById("myform:save-property-button");
+        	var loadMoreButton = document.getElementById("myform:load-more-button");
         	
         	const sortableList = document.getElementById("images-selected-list");
         	        
@@ -367,7 +368,7 @@
             		// load more images ONLY IF it is still able to scroll downwards
                 	if (lastYOffsetElement.value < currentHeight){
                 		lastYOffsetElement.value = currentHeight;
-                		document.getElementById("myform:load-more-button").click();
+                		loadMoreButton.click();
                 	}
             	}
             };
@@ -408,7 +409,7 @@
         		let nextSibling = siblings.find(sibling => {
         			return ev.clientY < sibling.offsetTop + sibling.offsetHeight;
         		});
-        		
+        		        		
         		if (typeof nextSibling != "undefined"){
         			let idString = nextSibling.id;
         			let id = idString.split("-")[2];
@@ -417,9 +418,7 @@
         		} else {
         			indexToPutElement.value = -1;
         		}
-        		
-        		console.log(nextSibling);
-        		 		
+        		        		 		
         		// insert the dragging item before the found sibling
         		if (draggingItem != null){
         			sortableList.insertBefore(draggingItem, nextSibling);
@@ -432,22 +431,20 @@
             }
             
             function dragFromSelected(ev){
-            	console.log("adding the class dragging-selected");
+            	//console.log("adding the class dragging-selected");
             	ev.target.classList.add("dragging-selected");
             	ev.dataTransfer.setData("text/plain", ev.target.id);
             	console.log("drag from selected with event id = " + ev.target.id);
             }
             
             function dragEndFromSelected(ev){
-            	console.log("removing the class dragging-selected");
+            	//console.log("removing the class dragging-selected");
             	ev.target.classList.remove("dragging-selected");
             }
             
             function dropToLoaded(ev) {
             	ev.preventDefault();
             	var data = ev.dataTransfer.getData("text/plain");
-            	console.log("data = " + data);
-            	//ev.target.appendChild(document.getElementById(data));
             	var chunks = data.split("-");
             	var source = chunks[0];
             	var index = chunks[2];
@@ -463,23 +460,18 @@
             function dropToSelected(ev){
             	ev.preventDefault();
             	var data = ev.dataTransfer.getData("text/plain");
-            	console.log("data = " + data);
-            	//ev.target.appendChild(document.getElementById(data));
             	var chunks = data.split("-");
             	var source = chunks[0];
             	var index = chunks[2];
+            	selectedIndexElement.value = index;
             	if (source == "loaded"){
             		console.log("adding new image with index " + index);
-            		selectedIndexElement.value = index;
             		selectImageButton.click();
-            		savePropertyButton.click();
             	} else {
-            		console.log("reordering selected elements");
-            		console.log("dragging image with index " + index);
-            		selectedIndexElement.value = index;
+            		console.log("reordering selected image with index " + index);
             		reorderSelectedButton.click();
-            		savePropertyButton.click();
             	}
+            	savePropertyButton.click();
             }
             
         //]]>
