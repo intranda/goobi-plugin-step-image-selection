@@ -435,7 +435,8 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             log.error("a negative selectedIndex is not valid");
             return;
         }
-        selectImage(selectedIndex);
+        boolean appendToEnd = indexToPut < 0;
+        selectImage(selectedIndex, appendToEnd);
     }
 
     /**
@@ -444,14 +445,17 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      * @param name name of the image that is selected
      * @param startIndex a probably true index of the image among all images, search will start there for efficiency
      */
-    private void selectImage(int startIndex) {
+    private void selectImage(int startIndex, boolean appendToEnd) {
         if (selectedImageMap.size() == maxSelectionAllowed) {
             log.debug("Cannot select more since the maximum number allowed " + maxSelectionAllowed + " is already reached.");
             return;
         }
+        if (appendToEnd) {
+            indexToPut = selectedImageMap.size();
+        }
         Image image = images.get(startIndex);
         if (!selectedImageMap.containsValue(image)) {
-            selectedImageMap.put(startIndex, image);
+            selectedImageMap.put(indexToPut, startIndex, image);
             log.debug("new image selected: " + image.getImageName());
         }
     }

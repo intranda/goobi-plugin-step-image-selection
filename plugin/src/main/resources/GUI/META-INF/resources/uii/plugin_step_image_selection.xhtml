@@ -116,7 +116,7 @@
             <h:inputHidden id="index-to-put" value="#{AktuelleSchritteForm.myPlugin.indexToPut}" />
             
             <h:commandButton id="select-image-button" value="Select" action="#{AktuelleSchritteForm.myPlugin.selectImage}" >
-               	<f:ajax execute="hidden-form:selected-index" render="myform"></f:ajax>
+               	<f:ajax execute="hidden-form:index-to-put hidden-form:selected-index" render="myform"></f:ajax>
             </h:commandButton>
                         
             <h:commandButton id="deselect-image-button" value="Deselect" action="#{AktuelleSchritteForm.myPlugin.deselectImage}" >
@@ -170,7 +170,7 @@
                 <div class="box-content row"
                          id="images-loaded-list1"
                          ondrop="dropToLoaded(event)"
-                         ondragover="allowDrop(event)">
+                         ondragover="allowDropToLoaded(event)">
 					    
                         <!-- AVAILABLE IMAGES -->
 						<ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesToShow}" >
@@ -239,7 +239,7 @@
                 <div class="box-content row"
                         id="images-selected-list"
                         ondrop="dropToSelected(event)"
-                        ondragover="allowDrop(event)">
+                        ondragover="allowDropToSelected(event)">
                         <!-- SELECTED IMAGES -->  
                         <!-- RUN THROUGH ALL SELECTED IMAGES -->
                         <ui:repeat var="image" varStatus="status" value="#{AktuelleSchritteForm.myPlugin.imagesSelected}">
@@ -338,31 +338,7 @@
         	var savePropertyButton = document.getElementById("myform:save-property-button");
         	
         	const sortableList = document.getElementById("images-selected-list");
-        	//console.log("selectedImagesList has length = " + selectedImagesList.length);
-        	
-        	/*
-        	const initSortableList = (e) => {
-        		e.preventDefault();
-        		const draggingItem = document.querySelector(".dragging-selected");
-        		// get all items except currently dragging and making array of them 
-        		let siblings = [...sortableList.querySelectorAll(".selected-item:not(.dragging-selected)")];
-        		
-        		// find the sibling after which the dragging item should be placed
-        		let nextSibling = siblings.find(sibling => {
-        			return e.clientY <= sibling.offsetTop + sibling.offsetHeight / 2;
-        		});
-        		
-        		console.log("nextSibling = " + nextSibling);
-        		
-        		// insert the dragging item before the found sibling
-        		//sortableList.insertBefore(draggingItem, nextSibling);
-        	};
-        	
-        	sortableList.addEventListener("dragover", initSortableList);
-        	sortableList.addEventListener("dragenter", e => e.preventDefault());
-        	*/
-        	 
-       
+        	        
             window.onload = function() {
                 loadImages();
                 //window.scrollTo(0, lastYOffsetElement.value);
@@ -416,26 +392,18 @@
             	lastYOffsetElement.value = currentHeight;
             }
             
-            function allowDrop(ev){
+            function allowDropToLoaded(ev){
+            	ev.preventDefault();
+            }
+            
+            function allowDropToSelected(ev){
             	ev.preventDefault();
             	            	
         		const draggingItem = document.querySelector(".dragging-selected");
-        		//console.log("draggingItem = " + draggingItem);
         		
         		// get all items except currently dragging and making array of them 
         		let siblings = [...sortableList.querySelectorAll(".selected-item:not(.dragging-selected)")];
-        		
-        		//console.log("siblings has length = " + siblings.length);
-        		//console.log("ev.clientY = " + ev.clientY);
-        		/*
-        		for (sibling of siblings){
-        			console.log(sibling);
-        			console.log("sibling.offsetTop = " + sibling.offsetTop);
-        			console.log("sibling.offsetHeight = " + sibling.offsetHeight);
-        		}
-        		*/
-        		
-        		
+        		      		
         		// find the sibling after which the dragging item should be placed
         		let nextSibling = siblings.find(sibling => {
         			return ev.clientY <= sibling.offsetTop + sibling.offsetHeight;
@@ -453,7 +421,9 @@
         		console.log(nextSibling);
         		 		
         		// insert the dragging item before the found sibling
-        		//sortableList.insertBefore(draggingItem, nextSibling);
+        		if (draggingItem != null){
+        			sortableList.insertBefore(draggingItem, nextSibling);
+        		}
             }
             
             function dragFromLoaded(ev){
@@ -502,6 +472,7 @@
             		console.log("adding new image with index " + index);
             		selectedIndexElement.value = index;
             		selectImageButton.click();
+            		savePropertyButton.click();
             	} else {
             		console.log("reordering selected elements");
             		console.log("dragging image with index " + index);
