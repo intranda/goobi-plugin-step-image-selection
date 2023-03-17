@@ -105,6 +105,10 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     @Getter
     @Setter
+    private int indexToPut = -1;
+
+    @Getter
+    @Setter
     private boolean allShown = false;
 
     private Processproperty property = null;
@@ -427,6 +431,10 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      */
     public void selectImage() {
         log.debug("selectedIndex = " + selectedIndex);
+        if (selectedIndex < 0) {
+            log.error("a negative selectedIndex is not valid");
+            return;
+        }
         selectImage(selectedIndex);
     }
 
@@ -453,6 +461,10 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      */
     public void deselectImage() {
         log.debug("deselectedIndex = " + deselectedIndex);
+        if (deselectedIndex < 0) {
+            log.error("a negative deselectedIndex is not valid");
+            return;
+        }
         deselectImage(deselectedIndex);
     }
 
@@ -467,6 +479,20 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         // the other one accepts an Object as key and removes its mapped value accordingly
         Image deselected = selectedImageMap.remove(order);
         log.debug("Image deselected: " + deselected.getImageName());
+        showSelectedImages();
+    }
+
+    public void reorderSelected() {
+        log.debug("indexToPut = " + indexToPut);
+        if (indexToPut == selectedIndex || indexToPut < 0) {
+            log.debug("no need to reorder");
+            return;
+        }
+        // the selected image of selectedIndex should be moved to the place indexToPut
+        // selectedIndex is hereby the order of this image among all selected
+        Integer key = selectedImageMap.get(selectedIndex);
+        Image value = selectedImageMap.remove(selectedIndex);
+        selectedImageMap.put(indexToPut, key, value);
         showSelectedImages();
     }
 
