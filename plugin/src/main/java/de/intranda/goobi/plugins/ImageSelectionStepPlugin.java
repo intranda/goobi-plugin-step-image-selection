@@ -486,11 +486,19 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         showSelectedImages();
     }
 
+    /**
+     * used to reorder among selected images via drag & drop
+     */
     public void reorderSelected() {
         log.debug("indexToPut = " + indexToPut);
         if (indexToPut == selectedIndex || indexToPut < 0) {
             log.debug("no need to reorder");
             return;
+        }
+        // if we want to move an image downwards, then we need to reduce indexToPut by one 
+        // this is due to the way we get our value via the ListOrderedMap::remove method
+        if (selectedIndex < indexToPut) {
+            --indexToPut;
         }
         // the selected image of selectedIndex should be moved to the place indexToPut
         // selectedIndex is hereby the order of this image among all selected

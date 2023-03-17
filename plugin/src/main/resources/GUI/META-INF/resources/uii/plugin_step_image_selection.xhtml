@@ -406,7 +406,7 @@
         		      		
         		// find the sibling after which the dragging item should be placed
         		let nextSibling = siblings.find(sibling => {
-        			return ev.clientY <= sibling.offsetTop + sibling.offsetHeight;
+        			return ev.clientY < sibling.offsetTop + sibling.offsetHeight;
         		});
         		
         		if (typeof nextSibling != "undefined"){
