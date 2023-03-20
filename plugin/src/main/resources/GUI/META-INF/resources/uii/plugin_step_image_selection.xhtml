@@ -110,7 +110,7 @@
     	<script src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/imageView.min.js"></script>
     	
     	
-    	<h:form id="hidden-form">
+    	<h:form id="hidden-form" style="visibility:hidden;">
     	    <!-- INPUT FOR THE PREVIOUS Y OFFSET, USED TO CONTROL THE LOADING OF IMAGES WHILE SCROLLING -->
             <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
             <!-- INPUT FOR THE INDEX OF THE DRAGGED IMAGE AMONG ITS SOURCE LIST -->
@@ -130,7 +130,7 @@
         <h:form id="myform">           
             
             <!-- BOX FOR ALL AVAILABLE IMAGES -->
-            <div class="box box-color lightgrey box-bordered col-sm-8">
+            <div class="box box-color lightgrey box-bordered col-sm-8 column-left">
                 
                 <!-- BOX HEAD -->
                 <div class="box-title">
@@ -138,7 +138,13 @@
                         <i class="fa fa-puzzle-piece" />
                         <h:outputText value="#{msgs.plugin_intranda_step_image_selection_availableImages}" />
                     </h3>
-                    <div class="actions">
+                    <div class="actions">              
+                        <!-- BUTTON TO LOAD MORE IMAGES, TRIGGERED WHEN WINDOW IS SCROLLED TO THE BOTTOM -->
+                        <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" style="visibility:hidden;" >
+                        	<f:ajax render="@form" ></f:ajax>
+                        </h:commandButton>
+                        <!-- // BUTTON TO LOAD MORE IMAGES -->
+                        
                     	<h:commandLink id="id10" action="#{NavigationForm.Reload}" styleClass="btn btn-mini">
                             <i class="fa fa-refresh" />
                         </h:commandLink>
@@ -153,13 +159,7 @@
                             <i class="fa fa-close" />
                             <x:updateActionListener property="#{NavigationForm.uiStatus.pluginSimulation}" value="#{false}" />
                         </h:commandLink>
-                                                 
-                         <!-- BUTTON TO LOAD MORE IMAGES, TRIGGERED WHEN WINDOW IS SCROLLED TO THE BOTTOM -->
-                        <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" >
-                        	<f:ajax render="@form" ></f:ajax>
-                        </h:commandButton>
-                        <!-- // BUTTON TO LOAD MORE IMAGES -->
-                        
+                                                                      
                     </div>
                 </div>
                 <!-- // BOX HEAD -->
@@ -222,7 +222,7 @@
             <!-- // BOX FOR ALL AVAILABLE IMAGES -->        
             
             <!-- BOX FOR SELECTED IMAGES -->
-            <div class="box box-color orange box-bordered col-sm-4">
+            <div class="box box-color orange box-bordered column-right">
                 
                 <!-- BOX HEAD -->
                 <div class="box-title">
@@ -388,6 +388,9 @@
                     $('.goobi-thumbnail-image .thumb').css('max-height', height + 'px');
                     $('.goobi-thumbnail-image .thumb canvas').css('max-height', height + 'px');
                     $('.goobi-thumbnail-image').css('max-width', (height) + 'px');
+                    
+                    $('.column-right').css('width', (height * 1.3) + 'px');
+                    $('.column-right').css('float', 'right');
                 }
             }
             
