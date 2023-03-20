@@ -158,9 +158,10 @@
                         
                         <h:commandButton value="Restart" action="#{AktuelleSchritteForm.myPlugin.loadImages}"/>
                          
-                        <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}">
-                        	<f:ajax render="myform:images-loaded-list1" ></f:ajax>
+                        <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" >
+                        	<f:ajax render="@form" ></f:ajax>
                         </h:commandButton>
+                        
                         
                     </div>
                 </div>
@@ -349,7 +350,7 @@
                 loadThumbnails();
             });
         
-            /*
+            /* needed to keep the images' sizes unchanged */
              jsf.ajax.addOnEvent((data) => {
                 var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
                 switch (ajaxstatus) {
@@ -358,8 +359,7 @@
                         loadThumbnails();
                         break;
                     }
-            }); 
-            */
+            });
             
             //const box = document.getElementById("myform:images-loaded-list1");
             window.onscroll = () => {     
@@ -369,6 +369,7 @@
                 	if (lastYOffsetElement.value < currentHeight){
                 		lastYOffsetElement.value = currentHeight;
                 		loadMoreButton.click();
+                		//savePropertyButton.click();
                 	}
             	}
             };
