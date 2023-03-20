@@ -392,6 +392,13 @@
                     $('.goobi-thumbnail-image .thumb canvas').css('max-height', height + 'px');
                     $('.goobi-thumbnail-image').css('max-width', (height) + 'px');
                     
+                    // make the first selected image bigger
+                    $('#selected-thumbnail-0 .goobi-thumbnail-image').css('height', (height + 75) + 'px');
+                    $('#selected-thumbnail-0 .goobi-thumbnail-image .thumb').css('max-height', (height + 50) + 'px');
+                    $('#selected-thumbnail-0 .goobi-thumbnail-image .thumb canvas').css('max-height', (height + 50) + 'px');
+                    $('#selected-thumbnail-0 .goobi-thumbnail-image').css('max-width', (height + 50) + 'px');
+                    
+                    // assure that the selected images are listed in one column, since otherwise drag & drop for sorting won't work
                     $('.column-right').css('width', (height * 1.3) + 'px');
                     $('.column-right').css('float', 'right');
                 }
