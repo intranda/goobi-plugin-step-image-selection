@@ -12,19 +12,21 @@
         <project>*</project>
         <step>*</step>
         
-        <!-- define how many images shall be loaded in the beginning, default 20 -->
+        <!-- define how many images shall be loaded in the beginning, DEFAULT 20 -->
         <defaultNumberToLoad>20</defaultNumberToLoad>
         
-        <!-- define how many more images shall be loaded when the window is scrolled to the bottom, default 10 -->
+        <!-- define how many more images shall be loaded when the window is scrolled to the bottom, DEFAULT 10 -->
         <defaultNumberToAdd>10</defaultNumberToAdd>
         
         <!-- define which folder shall be used to display the thumbnails, possible values are master | main | jpeg | source | ... -->
         <folder>main</folder>
         
-        <!-- define how many images shall be selected as maximum, if smaller than min, then no selection is allowed -->
+        <!-- define how many images shall be selected as maximum, DEFAULT 5 -->
+        <!-- if smaller than min, then no selection is permitted -->
         <max>5</max>
         
-        <!-- define how many images shall be selected as minimum, if greater than max, then no selection is allowed -->
+        <!-- define how many images shall be selected as minimum, DEFAULT 1 -->
+        <!-- if greater than max, then no selection is permitted -->
         <min>0</min>
         
         <!-- display button to finish the task directly from within the entered plugin -->
