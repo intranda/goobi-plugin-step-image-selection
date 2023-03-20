@@ -111,15 +111,19 @@
     	
     	
     	<h:form id="hidden-form">
+    	    <!-- INPUT FOR THE PREVIOUS Y OFFSET, USED TO CONTROL THE LOADING OF IMAGES WHILE SCROLLING -->
             <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
-            <h:inputHidden id="selected-index" value="#{AktuelleSchritteForm.myPlugin.selectedIndex}" />
-            <h:inputHidden id="deselected-index" value="#{AktuelleSchritteForm.myPlugin.deselectedIndex}" />
+            <!-- INPUT FOR THE INDEX OF THE DRAGGED IMAGE AMONG ITS SOURCE LIST -->
+            <h:inputHidden id="dragged-index" value="#{AktuelleSchritteForm.myPlugin.draggedIndex}" />
+            <!-- INPUT FOR THE TARGETED INDEX WHERE THE DRAGGED IMAGE IS DROPPED -->
             <h:inputHidden id="index-to-put" value="#{AktuelleSchritteForm.myPlugin.indexToPut}" />
             
+            <!-- BUTTON TO ADD A NEW IMAGE TO SELECTED -->
             <h:commandButton id="select-image-button" value="Select" action="#{AktuelleSchritteForm.myPlugin.selectImage}" />                  
+            <!-- BUTTON TO DESELECT AN IMAGE FROM THE SELECTED -->
             <h:commandButton id="deselect-image-button" value="Deselect" action="#{AktuelleSchritteForm.myPlugin.deselectImage}" />           
-            <h:commandButton id="reorder-selected-button" value="Reorder" action="#{AktuelleSchritteForm.myPlugin.reorderSelected}" />
-            
+            <!-- BUTTON TO EXCHANGE POSITIONS OF TWO SELECTED IMAGES -->
+            <h:commandButton id="reorder-selected-button" value="Reorder" action="#{AktuelleSchritteForm.myPlugin.reorderSelected}" />    
     	</h:form>
     	
     
@@ -149,12 +153,12 @@
                             <i class="fa fa-close" />
                             <x:updateActionListener property="#{NavigationForm.uiStatus.pluginSimulation}" value="#{false}" />
                         </h:commandLink>
-                        
-                        <h:commandButton value="Restart" action="#{AktuelleSchritteForm.myPlugin.loadImages}"/>
-                         
+                                                 
+                         <!-- BUTTON TO LOAD MORE IMAGES, TRIGGERED WHEN WINDOW IS SCROLLED TO THE BOTTOM -->
                         <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" >
                         	<f:ajax render="@form" ></f:ajax>
                         </h:commandButton>
+                        <!-- // BUTTON TO LOAD MORE IMAGES -->
                         
                     </div>
                 </div>
@@ -162,7 +166,7 @@
 
                 <!-- CONTENT AREA -->
                 <div class="box-content row"
-                         id="images-loaded-list1"
+                         id="images-loaded-list"
                          ondrop="dropToLoaded(event)"
                          ondragover="allowDropToLoaded(event)">
 					    
@@ -301,7 +305,7 @@
                         <x:updateActionListener property="#{NavigationForm.uiStatus.pluginSimulation}" value="#{false}" />
                     </h:commandLink>
                      
-                    <!-- Save -->
+                    <!-- Cancel -->
                     <h:commandLink styleClass="btn btn-lightgrey pull-right font-size-s" id="absenden" action="#{AktuelleSchritteForm.myPlugin.cancel}">
                         <i class="fa fa-close margin-right-5"></i>
                         <h:outputText value="#{msgs.pluginLeave}" />
@@ -320,20 +324,27 @@
         <script type="text/javascript">
         //<![CDATA[
         
+        	/* used to control whether to update the page when scrolled to the bottom */
         	var lastYOffsetElement = document.getElementById("hidden-form:last-y-offset");        	
         	
-        	var selectedIndexElement = document.getElementById("hidden-form:selected-index");
-        	var deselectedIndexElement = document.getElementById("hidden-form:deselected-index");
+        	/* hidden input to save the index of the dragged image among its source list */
+        	var draggedIndexElement = document.getElementById("hidden-form:dragged-index");
+        	/* hidden input to save the targeted index of the to-be-dropped image among the list of all selected */
         	var indexToPutElement = document.getElementById("hidden-form:index-to-put");
         	        	
+        	/* button to select a new image from the loaded to the selected */
          	var selectImageButton = document.getElementById("hidden-form:select-image-button");
+        	/* button to deselect an image from the selected */
         	var deselectImageButton = document.getElementById("hidden-form:deselect-image-button"); 
+        	/* button to exchange positions of two selected images */
         	var reorderSelectedButton = document.getElementById("hidden-form:reorder-selected-button");
         
+        	/* button to save the selected images as process property in the format of JSON */
         	var savePropertyButton = document.getElementById("myform:save-property-button");
+        	/* button to load more images */
         	var loadMoreButton = document.getElementById("myform:load-more-button");
         
-        	
+        	/* the list of all selected images, used for reordering via drag & drop */
         	var sortableList = document.getElementById("images-selected-list");
         	        
             window.onload = function() {
@@ -352,12 +363,12 @@
                     case "success": // This is called when ajax response is successfully processed.
                         loadImages();
                         loadThumbnails();
+                        // reinitialize the list to enable drag & drop
                         sortableList = document.getElementById("images-selected-list");
                         break;
                     }
             });
             
-            //const box = document.getElementById("myform:images-loaded-list1");
             window.onscroll = () => {     
             	var currentHeight = $(document).height();
             	if (window.innerHeight + window.pageYOffset >= currentHeight){    		
@@ -380,19 +391,12 @@
                 }
             }
             
-            function updateYOffset(){
-            	//alert("lastYOffset = " + lastYOffsetElement.value);
-            	//alert("window.screenY = " + window.screenY);
-            	//alert("window.pageYOffset = " + window.pageYOffset);
-            	var currentHeight = window.pageYOffset;
-            	//var currentHeight = window.screenY + window.pageYOffset;
-            	lastYOffsetElement.value = currentHeight;
-            }
-            
+            /* listener to the dragover event that happens on the images-loaded-list */
             function allowDropToLoaded(ev){
             	ev.preventDefault();
             }
             
+            /* listener to the dragover event that happens on the images-selected-list */
             function allowDropToSelected(ev){
             	ev.preventDefault();
             	            	
@@ -421,11 +425,13 @@
         		}
             }
             
+            /* listener to the dragstart event that happens on any image from the images-loaded-list */
             function dragFromLoaded(ev){
             	ev.dataTransfer.setData("text/plain", ev.target.id);
             	console.log("drag from loaded with event id = " + ev.target.id);
             }
             
+            /* listener to the dragstart event that happens on any image from the images-selected-list */
             function dragFromSelected(ev){
             	//console.log("adding the class dragging-selected");
             	ev.target.classList.add("dragging-selected");
@@ -433,11 +439,13 @@
             	console.log("drag from selected with event id = " + ev.target.id);
             }
             
+            /* listener to the dragend event that happens on any image from the images-selected-list */
             function dragEndFromSelected(ev){
             	//console.log("removing the class dragging-selected");
             	ev.target.classList.remove("dragging-selected");
             }
             
+            /* listener to the drop event that happens on the images-loaded-list */
             function dropToLoaded(ev) {
             	ev.preventDefault();
             	var data = ev.dataTransfer.getData("text/plain");
@@ -446,20 +454,21 @@
             	var index = chunks[2];
             	if (source == "selected"){
             		 console.log("deselecting image with index " + index);     		 
-            		 deselectedIndexElement.value = index;
+            		 draggedIndexElement.value = index;
             		 deselectImageButton.click();
             	} else{
             		console.log("NOTHING HAPPENS");
             	}
             }
             
+            /* listener to the drop event that happens on the images-selected-list */
             function dropToSelected(ev){
             	ev.preventDefault();
             	var data = ev.dataTransfer.getData("text/plain");
             	var chunks = data.split("-");
             	var source = chunks[0];
             	var index = chunks[2];
-            	selectedIndexElement.value = index;
+            	draggedIndexElement.value = index;
             	if (source == "loaded"){
             		console.log("adding new image with index " + index);
             		selectImageButton.click();

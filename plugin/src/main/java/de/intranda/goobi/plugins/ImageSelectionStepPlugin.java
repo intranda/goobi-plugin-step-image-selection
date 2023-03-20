@@ -97,11 +97,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     @Getter
     @Setter
-    private int selectedIndex = -1;
-
-    @Getter
-    @Setter
-    private int deselectedIndex = -1;
+    private int draggedIndex = -1;
 
     @Getter
     @Setter
@@ -430,13 +426,13 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      * select the image with index selectedIndex
      */
     public void selectImage() {
-        log.debug("selectedIndex = " + selectedIndex);
-        if (selectedIndex < 0) {
-            log.error("a negative selectedIndex is not valid");
+        log.debug("draggedIndex = " + draggedIndex);
+        if (draggedIndex < 0) {
+            log.error("a negative draggedIndex is not valid");
             return;
         }
         boolean appendToEnd = indexToPut < 0;
-        selectImage(selectedIndex, appendToEnd);
+        selectImage(draggedIndex, appendToEnd);
     }
 
     /**
@@ -464,12 +460,12 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      * deselect the image with order deselectedIndex
      */
     public void deselectImage() {
-        log.debug("deselectedIndex = " + deselectedIndex);
-        if (deselectedIndex < 0) {
+        log.debug("deselectedIndex = " + draggedIndex);
+        if (draggedIndex < 0) {
             log.error("a negative deselectedIndex is not valid");
             return;
         }
-        deselectImage(deselectedIndex);
+        deselectImage(draggedIndex);
     }
 
     /**
@@ -491,19 +487,19 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      */
     public void reorderSelected() {
         log.debug("indexToPut = " + indexToPut);
-        if (indexToPut == selectedIndex || indexToPut < 0) {
+        if (indexToPut == draggedIndex || indexToPut < 0) {
             log.debug("no need to reorder");
             return;
         }
         // if we want to move an image downwards, then we need to reduce indexToPut by one 
         // this is due to the way we get our value via the ListOrderedMap::remove method
-        if (selectedIndex < indexToPut) {
+        if (draggedIndex < indexToPut) {
             --indexToPut;
         }
         // the selected image of selectedIndex should be moved to the place indexToPut
         // selectedIndex is hereby the order of this image among all selected
-        Integer key = selectedImageMap.get(selectedIndex);
-        Image value = selectedImageMap.remove(selectedIndex);
+        Integer key = selectedImageMap.get(draggedIndex);
+        Image value = selectedImageMap.remove(draggedIndex);
         selectedImageMap.put(indexToPut, key, value);
         showSelectedImages();
     }
