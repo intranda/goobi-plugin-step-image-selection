@@ -70,42 +70,44 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
     private static final String PROPERTY_TITLE = "plugin_intranda_step_image_selection";
 
+    // index of the very last loaded image
     private int currentIndex = 0;
 
-    private List<Path> imagePaths = new ArrayList<>();
-
+    // list of all images
     private List<Image> images = new ArrayList<>();
 
+    // list of images that shall be loaded in the beginning
     private List<Image> imagesFirstLoad = new ArrayList<>();
 
+    // list of images that are already loaded
     @Getter
     private List<Image> imagesToShow = new ArrayList<>();
 
+    // map containing all selected images
     private ListOrderedMap<Integer, Image> selectedImageMap = new ListOrderedMap<>();
 
     @Getter
     private int thumbnailSize = 200;
+    // default number of images to load in the beginning
     private int defaultNumberToLoad;
+    // default number of additional images to load when scrolled to the bottom
     private int defaultNumberToAdd;
-
+    // maximum number of images allowed to be selected
     private int maxSelectionAllowed;
+    // minimum number of images allowed to be selected before saving property
     private int minSelectionAllowed;
 
     @Getter
     @Setter
-    private int lastYOffset = 0;
+    private int lastYOffset = 0; // used to control the automatic loading of more images when scrolled to be bottom
 
     @Getter
     @Setter
-    private int draggedIndex = -1;
+    private int draggedIndex = -1; // index of the dragged image among its source list (either loaded or selected), -1 if nothing is dragged
 
     @Getter
     @Setter
-    private int indexToPut = -1;
-
-    @Getter
-    @Setter
-    private boolean allShown = false;
+    private int indexToPut = -1; // the targeted index among the list of all selected for the dragged image to drop
 
     private Processproperty property = null;
 
@@ -147,8 +149,8 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             initializeImages(folderPath);
 
         } catch (IOException | SwapException | DAOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Errors happened in the initialization phase.");
+            log.error(e.getMessage());
         }
 
     }
@@ -185,7 +187,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             log.debug("There are no images available for NULL!");
             return;
         }
-        imagePaths = storageProvider.listFiles(folderPath.toString());
+        List<Path> imagePaths = storageProvider.listFiles(folderPath.toString());
         int order = 0;
         String imageFolderName = folderPath.getFileName().toString();
         Integer thumbnailSize = null;
@@ -215,15 +217,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         log.debug("The first " + topIndex + " imges in " + folderName + " will be shown:");
         imagesToShow = new ArrayList<>(imagesFirstLoad);
         currentIndex = topIndex;
-        updateFieldAllShown();
         showImages(imagesToShow);
-    }
-
-    /**
-     * update the status whether all images are shown
-     */
-    private void updateFieldAllShown() {
-        allShown = images.size() == imagesToShow.size();
     }
 
     /**
@@ -276,7 +270,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
                 --unfound;
             }
         }
-        // initialize the LinkedHashMap selectedImageMap
+        // initialize the selectedImageMap
         for (String name : names) {
             int index = nameToIndexMap.get(name);
             // check if there is still any -1 in the value list
@@ -286,23 +280,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             }
             selectedImageMap.put(index, images.get(index));
         }
-    }
-
-    /**
-     * get the index of the image among all images
-     * 
-     * @param name the name of the image
-     * @param indexOfLast the index of the last found Image. The search starts from its next one. Set it to -1 to start from the beginning.
-     * @return the index of the image among all images
-     */
-    private int getIndexOfImage(String name, int indexOfLast) {
-        for (int i = indexOfLast + 1; i < images.size(); ++i) {
-            Image image = images.get(i);
-            if (name.equals(image.getImageName())) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     /**
@@ -321,7 +298,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         }
 
         currentIndex = topIndex;
-        updateFieldAllShown();
         showImages(imagesAdded);
     }
 
@@ -383,6 +359,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             sb.append(image.getUrl());
             sb.append("\",");
         }
+        // delete the last comma
         if (sb.length() > 1) {
             sb.deleteCharAt(sb.length() - 1);
         }
@@ -415,6 +392,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     /**
+     * get a list of selected images
      * 
      * @return a list of selected Images
      */
@@ -460,9 +438,9 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      * deselect the image with order deselectedIndex
      */
     public void deselectImage() {
-        log.debug("deselectedIndex = " + draggedIndex);
+        log.debug("deselect image with index = " + draggedIndex);
         if (draggedIndex < 0) {
-            log.error("a negative deselectedIndex is not valid");
+            log.error("a negative index is not valid");
             return;
         }
         deselectImage(draggedIndex);
