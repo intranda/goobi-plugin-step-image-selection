@@ -109,25 +109,19 @@
     <ui:define name="content">
     	<script src="#{HelperForm.applicationWebsiteUrl}/uii/template/js/imageView.min.js"></script>
     	
+    	
     	<h:form id="hidden-form">
             <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
             <h:inputHidden id="selected-index" value="#{AktuelleSchritteForm.myPlugin.selectedIndex}" />
             <h:inputHidden id="deselected-index" value="#{AktuelleSchritteForm.myPlugin.deselectedIndex}" />
             <h:inputHidden id="index-to-put" value="#{AktuelleSchritteForm.myPlugin.indexToPut}" />
             
-            <h:commandButton id="select-image-button" value="Select" action="#{AktuelleSchritteForm.myPlugin.selectImage}" >
-               	<f:ajax execute="hidden-form:index-to-put hidden-form:selected-index" render="myform"></f:ajax>
-            </h:commandButton>
-                        
-            <h:commandButton id="deselect-image-button" value="Deselect" action="#{AktuelleSchritteForm.myPlugin.deselectImage}" >
-               	<f:ajax execute="hidden-form:deselected-index" render="myform"></f:ajax>
-            </h:commandButton>
-            
-            <h:commandButton id="reorder-selected-button" value="Reorder" action="#{AktuelleSchritteForm.myPlugin.reorderSelected}" >
-                <f:ajax execute="hidden-form:index-to-put hidden-form:selected-index" render="myform"></f:ajax>
-            </h:commandButton>
+            <h:commandButton id="select-image-button" value="Select" action="#{AktuelleSchritteForm.myPlugin.selectImage}" />                  
+            <h:commandButton id="deselect-image-button" value="Deselect" action="#{AktuelleSchritteForm.myPlugin.deselectImage}" />           
+            <h:commandButton id="reorder-selected-button" value="Reorder" action="#{AktuelleSchritteForm.myPlugin.reorderSelected}" />
             
     	</h:form>
+    	
     
         <h:form id="myform">           
             
@@ -161,7 +155,6 @@
                         <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" >
                         	<f:ajax render="@form" ></f:ajax>
                         </h:commandButton>
-                        
                         
                     </div>
                 </div>
@@ -298,7 +291,7 @@
                 <div class="form-actions">
                     
                     <!-- BUTTON TO SAVE PROPERTY -->
-                    <h:commandButton id="save-property-button" value="Save As Property" action="#{AktuelleSchritteForm.myPlugin.saveAsProperty}"/>
+                    <h:commandButton id="save-property-button" value="Save As Property" action="#{AktuelleSchritteForm.myPlugin.saveAsProperty}" />
                      <!-- // BUTTON TO SAVE PROPERTY -->
                      
                     <!-- Save and finish the task -->
@@ -328,6 +321,7 @@
         //<![CDATA[
         
         	var lastYOffsetElement = document.getElementById("hidden-form:last-y-offset");        	
+        	
         	var selectedIndexElement = document.getElementById("hidden-form:selected-index");
         	var deselectedIndexElement = document.getElementById("hidden-form:deselected-index");
         	var indexToPutElement = document.getElementById("hidden-form:index-to-put");
@@ -335,11 +329,12 @@
          	var selectImageButton = document.getElementById("hidden-form:select-image-button");
         	var deselectImageButton = document.getElementById("hidden-form:deselect-image-button"); 
         	var reorderSelectedButton = document.getElementById("hidden-form:reorder-selected-button");
-        	
+        
         	var savePropertyButton = document.getElementById("myform:save-property-button");
         	var loadMoreButton = document.getElementById("myform:load-more-button");
+        
         	
-        	const sortableList = document.getElementById("images-selected-list");
+        	var sortableList = document.getElementById("images-selected-list");
         	        
             window.onload = function() {
                 loadImages();
@@ -357,6 +352,7 @@
                     case "success": // This is called when ajax response is successfully processed.
                         loadImages();
                         loadThumbnails();
+                        sortableList = document.getElementById("images-selected-list");
                         break;
                     }
             });
@@ -369,7 +365,6 @@
                 	if (lastYOffsetElement.value < currentHeight){
                 		lastYOffsetElement.value = currentHeight;
                 		loadMoreButton.click();
-                		//savePropertyButton.click();
                 	}
             	}
             };
@@ -453,7 +448,6 @@
             		 console.log("deselecting image with index " + index);     		 
             		 deselectedIndexElement.value = index;
             		 deselectImageButton.click();
-            		 savePropertyButton.click();
             	} else{
             		console.log("NOTHING HAPPENS");
             	}
@@ -473,7 +467,6 @@
             		console.log("reordering selected image with index " + index);
             		reorderSelectedButton.click();
             	}
-            	savePropertyButton.click();
             }
             
         //]]>
