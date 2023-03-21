@@ -122,8 +122,14 @@
             <h:commandButton id="select-image-button" value="Select" action="#{AktuelleSchritteForm.myPlugin.selectImage}" />                  
             <!-- BUTTON TO DESELECT AN IMAGE FROM THE SELECTED -->
             <h:commandButton id="deselect-image-button" value="Deselect" action="#{AktuelleSchritteForm.myPlugin.deselectImage}" />           
-            <!-- BUTTON TO EXCHANGE POSITIONS OF TWO SELECTED IMAGES -->
+            <!-- BUTTON TO CHANGE THE POSITION OF A SELECTED IMAGE -->
             <h:commandButton id="reorder-selected-button" value="Reorder" action="#{AktuelleSchritteForm.myPlugin.reorderSelected}" />    
+            
+            <!-- BUTTON TO LOAD MORE IMAGES, TRIGGERED WHEN WINDOW IS SCROLLED TO THE BOTTOM -->
+            <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}">
+                <f:ajax render="myform" ></f:ajax>
+            </h:commandButton>
+            <!-- // BUTTON TO LOAD MORE IMAGES -->
     	</h:form>
     	
     
@@ -139,11 +145,6 @@
                         <h:outputText value="#{msgs.plugin_intranda_step_image_selection_availableImages}" />
                     </h3>
                     <div class="actions">              
-                        <!-- BUTTON TO LOAD MORE IMAGES, TRIGGERED WHEN WINDOW IS SCROLLED TO THE BOTTOM -->
-                        <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" style="visibility:hidden;" >
-                        	<f:ajax render="@form" ></f:ajax>
-                        </h:commandButton>
-                        <!-- // BUTTON TO LOAD MORE IMAGES -->
                         
                     	<h:commandLink id="id10" action="#{NavigationForm.Reload}" styleClass="btn btn-mini">
                             <i class="fa fa-refresh" />
@@ -339,14 +340,15 @@
          	var selectImageButton = document.getElementById("hidden-form:select-image-button");
         	/* button to deselect an image from the selected */
         	var deselectImageButton = document.getElementById("hidden-form:deselect-image-button"); 
-        	/* button to exchange positions of two selected images */
+        	/* button to change the position of a selected image */
         	var reorderSelectedButton = document.getElementById("hidden-form:reorder-selected-button");
+        	
+        	/* button to load more images */
+        	var loadMoreButton = document.getElementById("hidden-form:load-more-button");
         
         	/* button to save the selected images as process property in the format of JSON */
         	var savePropertyButton = document.getElementById("myform:save-property-button");
-        	/* button to load more images */
-        	var loadMoreButton = document.getElementById("myform:load-more-button");
-        
+
         	/* the list of all selected images, used for reordering via drag & drop */
         	var sortableList = document.getElementById("images-selected-list");
         	        
