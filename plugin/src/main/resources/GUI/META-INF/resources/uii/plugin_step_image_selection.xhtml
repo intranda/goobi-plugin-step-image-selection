@@ -367,7 +367,9 @@
                     
                     $('#selected-thumbnail-0 .goobi-thumbnail-image .thumb canvas').css('max-height', (height + 50) + 'px');                    
                     $('#selected-thumbnail-0 .goobi-thumbnail-image .thumb canvas').css('max-width', (height + 50) + 'px');
-                    //$('#selected-thumbnail-0 .goobi-thumbnail-image').css('margin-bottom', '50px');
+                    
+                    // reset the bottom padding of the div containing the first selected image
+                    $('#selected-thumbnail-0').css('margin-bottom', '50px');
                     
                     // assure that the selected images are listed in one column, since otherwise drag & drop for sorting won't work
                     $('.column-right').css('width', (height * 1.3) + 'px');
