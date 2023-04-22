@@ -364,12 +364,6 @@
             	}
             	this.oldScrollY = window.scrollY;
             	
-            	if (isScrollingDown){
-            		console.log("isScrollingDown");
-            	} else {
-            		console.log("not isScrollingDown");
-            	}
-            	
             	// check if it is scrolling down and the bottom is already hit
             	if (isScrollingDown && $(window).scrollTop() + $(window).height() == $(document).height()){
             		// load more images ONLY IF there are still some available
