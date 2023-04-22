@@ -346,7 +346,10 @@
                         loadThumbnails();
                         // reinitialize the list to enable drag & drop
                         sortableList = document.getElementById("images-selected-list");
+                        // reinitialize the list to assure that the availability check of more images holds
                         loadedList = document.getElementById("images-loaded-list");
+                        // scroll back to prevent a continuously triggered automatic loading
+                        window.scroll(0, this.oldScrollY);
                         break;
                     }
             });
@@ -354,20 +357,26 @@
             window.onscroll = () => {                 	
             	var isScrollingDown = false;
             	// check if it is scrolling down
-            	if (oldScrollY < window.scrollY){
+            	if (this.oldScrollY < window.scrollY){
             		isScrollingDown = true;
             	} else {
             		isScrollingDown = false;
             	}
-            	oldScrollY = window.scrollY;
+            	this.oldScrollY = window.scrollY;
+            	
+            	if (isScrollingDown){
+            		console.log("isScrollingDown");
+            	} else {
+            		console.log("not isScrollingDown");
+            	}
             	
             	// check if it is scrolling down and the bottom is already hit
-            	if (isScrollingDown && window.innerHeight + window.pageYOffset >= $(document).height()){    		
+            	if (isScrollingDown && $(window).scrollTop() + $(window).height() == $(document).height()){
             		// load more images ONLY IF there are still some available
             		let loadedImages = [...loadedList.querySelectorAll(".loaded-item")];            		
-            		//let moreImagesAvailable = loadedImages.length < availableImagesNumber.value;
+            		let moreImagesAvailable = loadedImages.length < availableImagesNumber.value;
             		
-            		if (loadedImages.length < availableImagesNumber.value){
+            		if (moreImagesAvailable){
             			loadMoreButton.click();
             		}            		
             	}
