@@ -118,7 +118,7 @@
                                 
                                 <div
                                     id="loaded-thumnail-#{status.index}"
-                                    class="goobi-thumbnail"
+                                    class="goobi-thumbnail loaded-item"
                                     dir="auto"
                                     draggable="true"
                                     ondragstart="dragFromLoaded(event)">
@@ -195,11 +195,10 @@
                                     <div class="thumb">
                                         <ui:fragment rendered="#{image.type == 'image'}">
                                             <button
-                                                jsf:id="buttonInBoxTitle"
+                                                jsf:id="move-upwards-button-#{status.index}"
                                                 class="btn d-flex align-items-center btn--title-action"
                                                 jsf:rel="tooltip"
-                                                jsf:action="#{AktuelleSchritteForm.myPlugin.moveUpwards(status.index)}"
-                                                title="#{msgs.reload}">
+                                                jsf:action="#{AktuelleSchritteForm.myPlugin.moveUpwards(status.index)}">
                                                 <canvas
                                                     class="thumb-canvas"
                                                     data-image_small="#{image.thumbnailUrl}"
@@ -276,13 +275,13 @@
         </h:form>
 
         <h:form id="hidden-form" style="visibility:hidden;">
-            <!-- INPUT FOR THE PREVIOUS Y OFFSET, USED TO CONTROL THE LOADING OF IMAGES WHILE SCROLLING -->
-            <h:inputHidden id="last-y-offset" value="#{AktuelleSchritteForm.myPlugin.lastYOffset}"/>
             <!-- INPUT FOR THE INDEX OF THE DRAGGED IMAGE AMONG ITS SOURCE LIST -->
             <h:inputHidden id="dragged-index" value="#{AktuelleSchritteForm.myPlugin.draggedIndex}" />
             <!-- INPUT FOR THE TARGETED INDEX WHERE THE DRAGGED IMAGE IS DROPPED -->
             <h:inputHidden id="index-to-put" value="#{AktuelleSchritteForm.myPlugin.indexToPut}" />
-            
+            <!-- INPUT TO HOLD THE TOTAL NUMBER OF ALL AVAILABLE IMAGES -->
+            <h:inputHidden id="available-images-number" value="#{AktuelleSchritteForm.myPlugin.numberOfImages}" />       
+                        
             <!-- BUTTON TO ADD A NEW IMAGE TO SELECTED -->
             <h:commandButton id="select-image-button" value="Select" action="#{AktuelleSchritteForm.myPlugin.selectImage}" />                  
             <!-- BUTTON TO DESELECT AN IMAGE FROM THE SELECTED -->
@@ -299,14 +298,14 @@
         
         <script type="text/javascript">
         //<![CDATA[
-        
-        	/* used to control whether to update the page when scrolled to the bottom */
-        	var lastYOffsetElement = document.getElementById("hidden-form:last-y-offset");        	
         	
         	/* hidden input to save the index of the dragged image among its source list */
         	var draggedIndexElement = document.getElementById("hidden-form:dragged-index");
         	/* hidden input to save the targeted index of the to-be-dropped image among the list of all selected */
         	var indexToPutElement = document.getElementById("hidden-form:index-to-put");
+        	
+        	/* hidden input to hold the total number of all available images */
+        	var availableImagesNumber = document.getElementById("hidden-form:available-images-number");
         	        	
         	/* button to select a new image from the loaded to the selected */
          	var selectImageButton = document.getElementById("hidden-form:select-image-button");
@@ -323,10 +322,15 @@
 
         	/* the list of all selected images, used for reordering via drag & drop */
         	var sortableList = document.getElementById("images-selected-list");
+        	
+        	/* the list of all loaded images, used for checking if it is still able to load more */
+        	var loadedList = document.getElementById("images-loaded-list");
+        	
+        	/* used to control whether the bottom of the page is hit */
+         	var oldScrollY = window.scrollY;
         	        
             window.onload = function() {
                 loadImages();
-                //window.scrollTo(0, lastYOffsetElement.value);
             }
         
             $( document ).ready(function() {             
@@ -342,18 +346,30 @@
                         loadThumbnails();
                         // reinitialize the list to enable drag & drop
                         sortableList = document.getElementById("images-selected-list");
+                        loadedList = document.getElementById("images-loaded-list");
                         break;
                     }
             });
-            
-            window.onscroll = () => {     
-            	var currentHeight = $(document).height();
-            	if (window.innerHeight + window.pageYOffset >= currentHeight){    		
-            		// load more images ONLY IF it is still able to scroll downwards
-                	if (lastYOffsetElement.value < currentHeight){
-                		lastYOffsetElement.value = currentHeight;
-                		loadMoreButton.click();
-                	}
+                     
+            window.onscroll = () => {                 	
+            	var isScrollingDown = false;
+            	// check if it is scrolling down
+            	if (oldScrollY < window.scrollY){
+            		isScrollingDown = true;
+            	} else {
+            		isScrollingDown = false;
+            	}
+            	oldScrollY = window.scrollY;
+            	
+            	// check if it is scrolling down and the bottom is already hit
+            	if (isScrollingDown && window.innerHeight + window.pageYOffset >= $(document).height()){    		
+            		// load more images ONLY IF there are still some available
+            		let loadedImages = [...loadedList.querySelectorAll(".loaded-item")];            		
+            		//let moreImagesAvailable = loadedImages.length < availableImagesNumber.value;
+            		
+            		if (loadedImages.length < availableImagesNumber.value){
+            			loadMoreButton.click();
+            		}            		
             	}
             };
             

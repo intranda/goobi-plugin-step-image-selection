@@ -97,6 +97,8 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     // minimum number of images allowed to be selected before saving property
     private int minSelectionAllowed;
 
+    private boolean moreImagesAvailable;
+
     @Getter
     @Setter
     private int lastYOffset = 0; // used to control the automatic loading of more images when scrolled to be bottom
@@ -482,12 +484,27 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         showSelectedImages();
     }
 
-    public void moveUpwards(int i) {
-        log.debug("hello your input is: " + i);
-        Integer key = selectedImageMap.get(i);
-        Image value = selectedImageMap.remove(i);
-        int indexToPut = i > 0 ? i - 1 : selectedImageMap.size();
-        selectedImageMap.put(indexToPut, key, value);
+    /**
+     * switch positions of the selected image and its nearest neighbor upwards, i.e. if the selected image is the top most one, then switch it with
+     * the bottom most one
+     * 
+     * @param order the index of the image among all selected images
+     */
+    public void moveUpwards(int order) {
+        log.debug("hello your input is: " + order);
+        Integer key = selectedImageMap.get(order);
+        Image value = selectedImageMap.remove(order);
+        int targetedIndex = order > 0 ? order - 1 : selectedImageMap.size();
+        selectedImageMap.put(targetedIndex, key, value);
+    }
+
+    /**
+     * get the number of all images, used to check if it is able to load more
+     * 
+     * @return the number of all images
+     */
+    public int getNumberOfImages() {
+        return images.size();
     }
 
     @Override
