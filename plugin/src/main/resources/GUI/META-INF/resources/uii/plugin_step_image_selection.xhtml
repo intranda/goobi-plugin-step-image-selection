@@ -194,13 +194,20 @@
     
                                     <div class="thumb">
                                         <ui:fragment rendered="#{image.type == 'image'}">
-                                            <canvas
-                                                class="thumb-canvas"
-                                                data-image_small="#{image.thumbnailUrl}"
-                                                data-image_large="#{image.largeThumbnailUrl}"
-                                                title="#{image.tooltip}"
-                                                id="thumnail-#{status.index}">
+                                            <button
+                                                jsf:id="buttonInBoxTitle"
+                                                class="btn d-flex align-items-center btn--title-action"
+                                                jsf:rel="tooltip"
+                                                jsf:action="#{AktuelleSchritteForm.myPlugin.moveUpwards(status.index)}"
+                                                title="#{msgs.reload}">
+                                                <canvas
+                                                    class="thumb-canvas"
+                                                    data-image_small="#{image.thumbnailUrl}"
+                                                    data-image_large="#{image.largeThumbnailUrl}"
+                                                    title="#{image.tooltip}"
+                                                    id="thumnail-#{status.index}">
                                                 </canvas>
+                                            </button>
                                         </ui:fragment>
     
                                         <!-- PLACEHOLDER -->
@@ -361,8 +368,7 @@
                     // make the first selected image bigger
                     $('#selected-thumbnail-0 .goobi-thumbnail-image').css('height', '120%');
                     $('#selected-thumbnail-0 .goobi-thumbnail-image').css('width', '120%');
-                    $('#selected-thumbnail-0 .goobi-thumbnail-image').css('max-height', (height + 50) + 'px');
-                    
+                    $('#selected-thumbnail-0 .goobi-thumbnail-image').css('max-height', (height + 50) + 'px');             
                     $('#selected-thumbnail-0 .goobi-thumbnail-image .thumb canvas').css('max-height', (height + 50) + 'px');                    
                     
                     // reset the bottom padding of the div containing the first selected image

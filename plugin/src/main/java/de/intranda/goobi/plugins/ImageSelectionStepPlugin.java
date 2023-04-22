@@ -482,6 +482,14 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
         showSelectedImages();
     }
 
+    public void moveUpwards(int i) {
+        log.debug("hello your input is: " + i);
+        Integer key = selectedImageMap.get(i);
+        Image value = selectedImageMap.remove(i);
+        int indexToPut = i > 0 ? i - 1 : selectedImageMap.size();
+        selectedImageMap.put(indexToPut, key, value);
+    }
+
     @Override
     public PluginGuiType getPluginGuiType() {
         return PluginGuiType.FULL;
