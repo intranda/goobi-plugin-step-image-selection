@@ -356,7 +356,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             sb.append("\"");
             sb.append(image.getImageName());
             sb.append("\":\"");
-            sb.append(image.getUrl());
+            sb.append(image.getTooltip());
             sb.append("\",");
         }
         // delete the last comma
