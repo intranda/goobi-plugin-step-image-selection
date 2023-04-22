@@ -485,16 +485,30 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     }
 
     /**
-     * switch positions of the selected image and its nearest neighbor upwards, i.e. if the selected image is the top most one, then switch it with
-     * the bottom most one
+     * switch positions of the selected image and its nearest neighbor upwards, and if the selected image is the top most one, then move it to the
+     * bottom position
      * 
      * @param order the index of the image among all selected images
      */
     public void moveUpwards(int order) {
-        log.debug("hello your input is: " + order);
+        log.debug("moving the selected image at position {} upwards", order);
         Integer key = selectedImageMap.get(order);
         Image value = selectedImageMap.remove(order);
         int targetedIndex = order > 0 ? order - 1 : selectedImageMap.size();
+        selectedImageMap.put(targetedIndex, key, value);
+    }
+
+    /**
+     * switch positions of the selected image and its nearest neighbor downwards, and if the selected image is the bottom most one, then move it to
+     * the top position
+     * 
+     * @param order the index of the image among all selected images
+     */
+    public void moveDownwards(int order) {
+        log.debug("moving the selected image at position {} downwards", order);
+        Integer key = selectedImageMap.get(order);
+        Image value = selectedImageMap.remove(order);
+        int targetedIndex = order > selectedImageMap.size() - 1 ? 0 : order + 1;
         selectedImageMap.put(targetedIndex, key, value);
     }
 
