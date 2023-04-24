@@ -246,6 +246,24 @@
                              	    	$("#move-downwards-button-#{status.index}").trigger("click");
                              	    }                         	      
                              	});
+                                
+                                // the cursors below should be modified to make more sense
+                                $("#thumbnail-#{status.index}").mousemove(function(e){
+                              	   var pHeight = $(this).innerHeight();
+                             	   var pOffset = $(this).offset();
+                             	   var y = e.pageY - pOffset.top;
+                             	    if(pHeight / 2 > y){
+                             	    	// mousemove event happens on the top half of the image
+                             	    	$(".thumb").css("cursor", "pointer");
+                             	    } else {
+                             	    	// mousemove event happens on the bottom half of the image
+                             	    	$(".thumb").css("cursor", "crosshair");
+                             	    }  
+                                 });
+                                
+                                $("#thumbnail-#{status.index}").mouseout(function(e){
+                                    $(".thumb").css("cursor", "default");
+                                  });
                             });
                             </script>
     
