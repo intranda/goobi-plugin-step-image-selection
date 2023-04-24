@@ -262,8 +262,8 @@
                                  });
                                 
                                 $("#thumbnail-#{status.index}").mouseout(function(e){
-                                    $(".thumb").css("cursor", "default");
-                                  });
+                                	$(".thumb").css("cursor", "grab");
+                                 });
                             });
                             </script>
     
@@ -440,6 +440,9 @@
                     // assure that the selected images are listed in one column, since otherwise drag & drop for sorting won't work
                     $('.column-right').css('width', (height * 1.3) + 'px');
                     $('.column-right').css('float', 'right');
+                    
+                    // set mouse cursors
+                    $(".thumb").css("cursor", "grab");
                 }
             }
             
@@ -489,6 +492,7 @@
             
             /* listener to the dragstart event that happens on any image from the images-loaded-list */
             function dragFromLoaded(ev){
+            	$(".thumb").css("cursor", "grabbing");
             	ev.dataTransfer.setData("text/plain", ev.target.id);
             	console.log("drag from loaded with event id = " + ev.target.id);
             }
@@ -496,6 +500,7 @@
             /* listener to the dragstart event that happens on any image from the images-selected-list */
             function dragFromSelected(ev){
             	//console.log("adding the class dragging-selected");
+            	$(".thumb").css("cursor", "grabbing");
             	ev.target.classList.add("dragging-selected");
             	ev.dataTransfer.setData("text/plain", ev.target.id);
             	console.log("drag from selected with event id = " + ev.target.id);
@@ -504,11 +509,13 @@
             /* listener to the dragend event that happens on any image from the images-selected-list */
             function dragEndFromSelected(ev){
             	//console.log("removing the class dragging-selected");
+            	$(".thumb").css("cursor", "grab");
             	ev.target.classList.remove("dragging-selected");
             }
             
             /* listener to the drop event that happens on the images-loaded-list */
             function dropToLoaded(ev) {
+            	$(".thumb").css("cursor", "grab");
             	ev.preventDefault();
             	var data = ev.dataTransfer.getData("text/plain");
             	var chunks = data.split("-");
@@ -525,6 +532,7 @@
             
             /* listener to the drop event that happens on the images-selected-list */
             function dropToSelected(ev){
+            	$(".thumb").css("cursor", "grab");
             	ev.preventDefault();
             	var data = ev.dataTransfer.getData("text/plain");
             	var chunks = data.split("-");
