@@ -68,6 +68,9 @@
     overflow: hidden;
     max-height: #{AktuelleSchritteForm.myPlugin.thumbnailSize +2}px;
 }
+.selected-canvas-buttons {
+	display: none;
+}
 </style>
     
     
@@ -194,19 +197,24 @@
     
                                     <div class="thumb">
                                         <ui:fragment rendered="#{image.type == 'image'}">
-                                            <button
-                                                jsf:id="move-upwards-button-#{status.index}"
-                                                class="btn d-flex align-items-center btn--title-action"
-                                                jsf:rel="tooltip"
-                                                jsf:action="#{AktuelleSchritteForm.myPlugin.moveDownwards(status.index)}">
-                                                <canvas
-                                                    class="thumb-canvas"
-                                                    data-image_small="#{image.thumbnailUrl}"
-                                                    data-image_large="#{image.largeThumbnailUrl}"
-                                                    title="#{image.tooltip}"
-                                                    id="thumnail-#{status.index}">
-                                                </canvas>
-                                            </button>
+	                                        <canvas
+	                                            class="thumb-canvas"
+	                                            data-image_small="#{image.thumbnailUrl}"
+	                                            data-image_large="#{image.largeThumbnailUrl}"
+	                                            title="#{image.tooltip}"
+	                                            id="thumbnail-#{status.index}" />
+	                                        <!-- HIDDEN BUTTON TO MOVE THE CLICKED CANVAS IMAGE UPWARDS BY ONE -->
+	                                        <button
+	                                           id="move-upwards-button-#{status.index}"
+	                                           class="selected-canvas-buttons"
+	                                           jsf:rel="tooltip"
+	                                           jsf:action="#{AktuelleSchritteForm.myPlugin.moveUpwards(status.index)}" />
+	                                        <!-- HIDDEN BUTTON TO MOVE THE CLICKED CANVAS IMAGE DOWNWARDS BY ONE -->
+	                                        <button
+	                                           id="move-downwards-button-#{status.index}"
+	                                           class="selected-canvas-buttons"
+	                                           jsf:rel="tooltip"
+	                                           jsf:action="#{AktuelleSchritteForm.myPlugin.moveDownwards(status.index)}" />                                 
                                         </ui:fragment>
     
                                         <!-- PLACEHOLDER -->
@@ -223,6 +231,23 @@
                                     <h:outputText value="#{image.imageName}" />
                                 </div>
                             </div>
+                            
+                            <script>
+                            $( document ).ready(function() {
+                                $("#thumbnail-#{status.index}").click(function(e){
+                             	   var pHeight = $(this).innerHeight();
+                             	   var pOffset = $(this).offset();
+                             	   var y = e.pageY - pOffset.top;
+                             	    if(pHeight / 2 > y){
+                             	    	// click event happens on the top half of the image
+                                	    $("#move-upwards-button-#{status.index}").trigger("click");
+                             	    } else {
+                             	    	// click event happens on the bottom half of the image
+                             	    	$("#move-downwards-button-#{status.index}").trigger("click");
+                             	    }                         	      
+                             	});
+                            });
+                            </script>
     
                         </ui:repeat>
                         <!-- // SELECTED IMAGES -->
