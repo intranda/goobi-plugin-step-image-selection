@@ -443,20 +443,30 @@
         		let nextSibling = siblings.find(sibling => {
         			return ev.clientY < sibling.getBoundingClientRect().bottom;
         		});
+        		
+        		// if nextSibling is undefined, then it means that no element comes after the being-dragged one, 
+        		// therefore it should be appended to the end of the list
+        		let isInsertBefore = false;
         		        		
         		if (typeof nextSibling != "undefined"){
         			let idString = nextSibling.id;
         			let id = idString.split("-")[2];
-        			console.log("id = " + id);
         			indexToPutElement.value = id;
+        			isInsertBefore = true;
         		} else {
         			indexToPutElement.value = -1;
         		}
-        		        		 		
-        		// insert the dragging item before the found sibling
+	            
+        		// check if the being-dragged item is already selected or not
         		if (draggingItem != null){
-        			sortableList.insertBefore(draggingItem, nextSibling);
-        		}
+        			if (isInsertBefore){
+        				// insert the dragging item before the found sibling
+        				sortableList.insertBefore(draggingItem, nextSibling);
+        			} else {
+        				// append the item to the end of the list
+        				sortableList.appendChild(draggingItem);
+        			}			
+        		}  		
             }
             
             /* listener to the dragstart event that happens on any image from the images-loaded-list */

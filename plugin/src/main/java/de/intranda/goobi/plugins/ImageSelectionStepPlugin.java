@@ -467,10 +467,16 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      */
     public void reorderSelected() {
         log.debug("indexToPut = " + indexToPut);
-        if (indexToPut == draggedIndex || indexToPut < 0) {
+        if (indexToPut == draggedIndex) {
             log.debug("no need to reorder");
             return;
         }
+
+        if (indexToPut == -1) {
+            log.debug("appending to the bottom");
+            indexToPut = selectedImageMap.size();
+        }
+
         // if we want to move an image downwards, then we need to reduce indexToPut by one 
         // this is due to the way we get our value via the ListOrderedMap::remove method
         if (draggedIndex < indexToPut) {
