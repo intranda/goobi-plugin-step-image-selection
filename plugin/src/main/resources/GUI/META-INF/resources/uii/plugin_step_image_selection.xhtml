@@ -304,8 +304,9 @@
             <h:inputHidden id="dragged-index" value="#{AktuelleSchritteForm.myPlugin.draggedIndex}" />
             <!-- INPUT FOR THE TARGETED INDEX WHERE THE DRAGGED IMAGE IS DROPPED -->
             <h:inputHidden id="index-to-put" value="#{AktuelleSchritteForm.myPlugin.indexToPut}" />
-            <!-- INPUT TO HOLD THE TOTAL NUMBER OF ALL AVAILABLE IMAGES -->
-            <h:inputHidden id="available-images-number" value="#{AktuelleSchritteForm.myPlugin.numberOfImages}" />       
+            
+            <!-- THE TOTAL NUMBER OF ALL AVAILABLE IMAGES -->
+            <h:outputText id="available-images-number" value="#{AktuelleSchritteForm.myPlugin.numberOfImages}" />       
                         
             <!-- BUTTON TO ADD A NEW IMAGE TO SELECTED -->
             <h:commandButton id="select-image-button" value="Select" action="#{AktuelleSchritteForm.myPlugin.selectImage}" />                  
@@ -329,8 +330,8 @@
         	/* hidden input to save the targeted index of the to-be-dropped image among the list of all selected */
         	var indexToPutElement = document.getElementById("hidden-form:index-to-put");
         	
-        	/* hidden input to hold the total number of all available images */
-        	var availableImagesNumber = document.getElementById("hidden-form:available-images-number");
+        	/* the total number of all available images */
+        	const availableImagesNumber = document.getElementById("hidden-form:available-images-number").textContent;
         	        	
         	/* button to select a new image from the loaded to the selected */
          	var selectImageButton = document.getElementById("hidden-form:select-image-button");
@@ -374,7 +375,7 @@
                         // reinitialize the list to assure that the availability check of more images holds
                         loadedList = document.getElementById("images-loaded-list");
                         // scroll back to prevent a continuously triggered automatic loading
-                        window.scroll(0, this.oldScrollY);
+                        window.scroll(0, oldScrollY);
                         break;
                     }
             });
@@ -382,18 +383,18 @@
             window.onscroll = () => {                 	
             	var isScrollingDown = false;
             	// check if it is scrolling down
-            	if (this.oldScrollY < window.scrollY){
+            	if (oldScrollY < window.scrollY){
             		isScrollingDown = true;
             	} else {
             		isScrollingDown = false;
             	}
-            	this.oldScrollY = window.scrollY;
+            	oldScrollY = window.scrollY;
             	
             	// check if it is scrolling down and the bottom is already hit
             	if (isScrollingDown && $(window).scrollTop() + $(window).height() == $(document).height()){
             		// load more images ONLY IF there are still some available
             		let loadedImages = [...loadedList.querySelectorAll(".loaded-item")];            		
-            		let moreImagesAvailable = loadedImages.length < availableImagesNumber.value;
+            		let moreImagesAvailable = loadedImages.length < availableImagesNumber;
             		
             		if (moreImagesAvailable){
             			loadMoreButton.click();
