@@ -446,14 +446,14 @@
         		
         		// if nextSibling is undefined, then it means that no element comes after the being-dragged one, 
         		// therefore it should be appended to the end of the list
-        		let isInsertBefore = false;
+        		let isInsertBefore = true;
         		        		
         		if (typeof nextSibling != "undefined"){
         			let idString = nextSibling.id;
         			let id = idString.split("-")[2];
         			indexToPutElement.value = id;
-        			isInsertBefore = true;
         		} else {
+        			isInsertBefore = false;
         			indexToPutElement.value = -1;
         		}
 	            
