@@ -349,16 +349,16 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     /**
      * create the Json string used as value for the process property
      * 
-     * @return the Json string with keys being the names of selected images, and values being their urls
+     * @return the Json string with keys being the names of selected images, and values being their orders among all selected images
      */
     private String createJsonOfSelectedImages() {
         StringBuilder sb = new StringBuilder("{");
-        Collection<Image> selectedImages = selectedImageMap.values();
-        for (Image image : selectedImages) {
+        for (int i = 0; i < selectedImageMap.size(); ++i) {
+            Image image = selectedImageMap.getValue(i);
             sb.append("\"");
             sb.append(image.getImageName());
             sb.append("\":\"");
-            sb.append(image.getTooltip());
+            sb.append(i + 1);
             sb.append("\",");
         }
         // delete the last comma
