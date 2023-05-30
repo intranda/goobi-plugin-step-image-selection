@@ -97,8 +97,6 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     // minimum number of images allowed to be selected before saving property
     private int minSelectionAllowed;
 
-    private boolean moreImagesAvailable;
-
     @Getter
     @Setter
     private int lastYOffset = 0; // used to control the automatic loading of more images when scrolled to be bottom
@@ -525,6 +523,15 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      */
     public int getNumberOfImages() {
         return images.size();
+    }
+
+    /**
+     * check if there are still more images available that are not loaded yet
+     * 
+     * @return true if there are more images to be loaded, false if all images are already loaded
+     */
+    public boolean isMoreImagesAvailable() {
+        return imagesToShow.size() < images.size();
     }
 
     @Override

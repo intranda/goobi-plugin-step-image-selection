@@ -159,6 +159,18 @@
                         </div>
                         <!-- // CONTENT AREA -->
                     </div>
+                    
+                    <!-- BUTTON TO LOAD MORE IMAGES. -->
+                    <div>
+                    	<h:commandLink 
+                    	    id="load-more-command-link" 
+                    	    value="Load More" 
+                    	    action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" 
+                    	    rendered="#{AktuelleSchritteForm.myPlugin.moreImagesAvailable}">
+                            <f:ajax render="myform" />
+                        </h:commandLink>
+                    </div>
+                    <!-- // BUTTON TO LOAD MORE IMAGES. -->
                 
                 </intranda:box>
             </div>
@@ -335,7 +347,7 @@
             
             <!-- BUTTON TO LOAD MORE IMAGES, TRIGGERED WHEN WINDOW IS SCROLLED TO THE BOTTOM -->
             <h:commandButton id="load-more-button" value="Load More" action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}">
-                <f:ajax render="myform" ></f:ajax>
+                <f:ajax render="myform" />
             </h:commandButton>
             <!-- // BUTTON TO LOAD MORE IMAGES -->
         </h:form>
@@ -372,9 +384,14 @@
         	
         	/* used to control whether the bottom of the page is hit */
          	var oldScrollY = window.scrollY;
+        	
+        	/* the boolean flag stating whether there are more images available that are not loaded yet */
+        	var moreImagesAvailable;
         	        
             window.onload = function() {
                 loadImages();
+                // update the boolean flag moreImagesAvailable
+                updateAvailabilityOfMoreImages();
             }
         
             $( document ).ready(function() {             
@@ -392,13 +409,16 @@
                         sortableList = document.getElementById("images-selected-list");
                         // reinitialize the list to assure that the availability check of more images holds
                         loadedList = document.getElementById("images-loaded-list");
+                        // update the boolean flag moreImagesAvailable
+                		updateAvailabilityOfMoreImages();
+                        
                         // scroll back to prevent a continuously triggered automatic loading
                         window.scroll(0, oldScrollY);
                         break;
                     }
             });
                      
-            window.onscroll = () => {                 	
+            window.onscroll = () => {    
             	var isScrollingDown = false;
             	// check if it is scrolling down
             	if (oldScrollY < window.scrollY){
@@ -410,11 +430,10 @@
             	
             	// check if it is scrolling down and the bottom is already hit
             	if (isScrollingDown && $(window).scrollTop() + $(window).height() == $(document).height()){
-            		// load more images ONLY IF there are still some available
-            		let loadedImages = [...loadedList.querySelectorAll(".loaded-item")];            		
-            		let moreImagesAvailable = loadedImages.length < availableImagesNumber;
-            		
+            		console.log("bottom reached");
+            		// load more images ONLY IF there are still some available         		
             		if (moreImagesAvailable){
+            			console.log("loading more images");
             			loadMoreButton.click();
             		}            		
             	}
@@ -444,6 +463,12 @@
                     // set mouse cursors
                     $(".thumb").css("cursor", "grab");
                 }
+            }
+            
+            /* used to update the boolean flag moreImagesAvailable whenver images are (re-)loaded */
+            function updateAvailabilityOfMoreImages(){
+        		let loadedImages = [...loadedList.querySelectorAll(".loaded-item")];            		
+        		moreImagesAvailable = loadedImages.length < availableImagesNumber;
             }
             
             /* listener to the dragover event that happens on the images-loaded-list */
