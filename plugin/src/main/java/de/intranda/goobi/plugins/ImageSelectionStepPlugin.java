@@ -74,17 +74,17 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
     private int currentIndex = 0;
 
     // list of all images
-    private List<Image> images = new ArrayList<>();
+    private transient List<Image> images = new ArrayList<>();
 
     // list of images that shall be loaded in the beginning
-    private List<Image> imagesFirstLoad = new ArrayList<>();
+    private transient List<Image> imagesFirstLoad = new ArrayList<>();
 
     // list of images that are already loaded
     @Getter
-    private List<Image> imagesToShow = new ArrayList<>();
+    private transient List<Image> imagesToShow = new ArrayList<>();
 
     // map containing all selected images
-    private ListOrderedMap<Integer, Image> selectedImageMap = new ListOrderedMap<>();
+    private transient ListOrderedMap<Integer, Image> selectedImageMap = new ListOrderedMap<>();
 
     @Getter
     private int thumbnailSize = 200;
