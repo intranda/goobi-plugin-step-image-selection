@@ -158,19 +158,22 @@
                 
                         </div>
                         <!-- // CONTENT AREA -->
+                        
+                        <!-- BUTTON TO LOAD MORE IMAGES. -->
+                        <div class="d-flex justify-content-center">
+                    	    <h:commandLink 
+                    	        id="load-more-command-link" 
+                    	        value="#{msgs.loadMoreImages}" 
+                    	        action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" 
+                    	        rendered="#{AktuelleSchritteForm.myPlugin.moreImagesAvailable}">
+                                <f:ajax render="myform" />
+                            </h:commandLink>
+                        </div>
+                        <!-- // BUTTON TO LOAD MORE IMAGES. -->
+                        
                     </div>
                     
-                    <!-- BUTTON TO LOAD MORE IMAGES. -->
-                    <div>
-                    	<h:commandLink 
-                    	    id="load-more-command-link" 
-                    	    value="Load More" 
-                    	    action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" 
-                    	    rendered="#{AktuelleSchritteForm.myPlugin.moreImagesAvailable}">
-                            <f:ajax render="myform" />
-                        </h:commandLink>
-                    </div>
-                    <!-- // BUTTON TO LOAD MORE IMAGES. -->
+
                 
                 </intranda:box>
             </div>
