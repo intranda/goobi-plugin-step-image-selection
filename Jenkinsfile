@@ -26,6 +26,15 @@ pipeline {
         recordIssues enabledForFailure: true, aggregatingResults: true, tools: [java(), javaDoc()]
       }
     }
+
+    stage('sonarcloud') {
+      steps {
+        withCredentials([string(credentialsId: 'jenkins-sonarcloud', variable: 'TOKEN')]) {
+          sh 'mvn -f plugin/pom.xml verify sonar:sonar -Dsonar.login=$TOKEN'
+        }
+      }
+    }
+    
   }
   
   post {
