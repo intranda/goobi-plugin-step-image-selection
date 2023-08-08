@@ -6,6 +6,8 @@
   <properties>
     <jar.name>plugin_intranda_step_image_selection</jar.name>
     <dest.folder>/opt/digiverso/goobi/plugins/step/</dest.folder>
+     <!-- The Sonar basedir is one level up... -->
+    <sonar.projectBaseDir>..</sonar.projectBaseDir>   
   </properties>
   <parent>
     <groupId>de.intranda.goobi.plugins.step</groupId>
