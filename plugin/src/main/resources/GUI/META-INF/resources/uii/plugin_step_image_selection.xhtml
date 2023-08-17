@@ -160,14 +160,17 @@
                         <!-- // CONTENT AREA -->
                         
                         <!-- BUTTON TO LOAD MORE IMAGES. -->
-                        <div class="d-flex justify-content-center">
-                    	    <h:commandLink 
-                    	        id="load-more-command-link" 
-                    	        value="#{msgs.loadMoreImages}" 
-                    	        action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}" 
-                    	        rendered="#{AktuelleSchritteForm.myPlugin.moreImagesAvailable}">
+                        <div class="d-flex justify-content-center" jsf:rendered="#{AktuelleSchritteForm.myPlugin.moreImagesAvailable}">
+                            
+                            <button class="btn btn-primary"
+                                jsf:id="load-more-command-link"
+                                jsf:action="#{AktuelleSchritteForm.myPlugin.loadMoreImages}">
+                                <span>
+                                    <h:outputText value="#{msgs.plugin_intranda_step_image_selection_loadMoreImages}" />
+                                </span>
                                 <f:ajax render="myform" />
-                            </h:commandLink>
+                            </button>
+                            
                         </div>
                         <!-- // BUTTON TO LOAD MORE IMAGES. -->
                         

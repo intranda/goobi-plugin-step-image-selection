@@ -475,7 +475,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
             indexToPut = selectedImageMap.size();
         }
 
-        // if we want to move an image downwards, then we need to reduce indexToPut by one 
+        // if we want to move an image downwards, then we need to reduce indexToPut by one
         // this is due to the way we get our value via the ListOrderedMap::remove method
         if (draggedIndex < indexToPut) {
             --indexToPut;
@@ -530,7 +530,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      * 
      * @return true if there are more images to be loaded, false if all images are already loaded
      */
-    public boolean isMoreImagesAvailable() {
+    public boolean getMoreImagesAvailable() {
         return imagesToShow.size() < images.size();
     }
 
