@@ -210,7 +210,8 @@
                                 dir="auto"
                                 draggable="true"
                                 ondragstart="dragFromSelected(event)"
-                                ondragend="dragEndFromSelected(event)">
+                                ondragend="dragEndFromSelected(event)"
+                                oncontextmenu="upgradeToTop(event)">
                                 <div class="goobi-thumbnail-image text-center">
     
                                     <div class="thumb">
@@ -577,6 +578,18 @@
             		console.log("reordering selected image with index " + index);
             		reorderSelectedButton.click();
             	}
+            }
+            
+            /* listener to the right click mouse event that happens on the images-selected-list */
+            function upgradeToTop(ev){
+            	ev.preventDefault();
+            	var eventId = ev.target.id;
+            	var chunks = eventId.split("-");
+            	var index = chunks[1];
+            	console.log("upgrading the following selected image to top: " + index);
+            	draggedIndexElement.value = index;
+            	indexToPutElement.value = 0;
+            	reorderSelectedButton.click();
             }
             
         //]]>
