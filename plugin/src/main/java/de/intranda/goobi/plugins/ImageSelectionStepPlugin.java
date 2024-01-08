@@ -40,6 +40,7 @@ import org.goobi.production.enums.StepReturnValue;
 import org.goobi.production.plugin.interfaces.IStepPluginVersion2;
 
 import de.sub.goobi.config.ConfigPlugins;
+import de.sub.goobi.helper.Helper;
 import de.sub.goobi.helper.StorageProvider;
 import de.sub.goobi.helper.StorageProviderInterface;
 import de.sub.goobi.helper.exceptions.DAOException;
@@ -55,6 +56,7 @@ import net.xeoh.plugins.base.annotations.PluginImplementation;
 @Log4j2
 public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
 
+    private static final long serialVersionUID = 1409462029481317752L;
     @Getter
     private String title = "intranda_step_image_selection";
     @Getter
@@ -308,7 +310,7 @@ public class ImageSelectionStepPlugin implements IStepPluginVersion2 {
      */
     public boolean saveAsProperty() {
         if (selectedImageMap.size() < minSelectionAllowed) {
-            log.debug("Cannot save property. At least " + minSelectionAllowed + " should be selected.");
+            Helper.setFehlerMeldung("Cannot save property. At least " + minSelectionAllowed + " should be selected.");
             return false;
         }
         setUpProcesspropertyToSave(process.getId(), PROPERTY_TITLE);
