@@ -7,7 +7,7 @@
     <relativePath />
   </parent>
   <groupId>io.goobi.workflow.plugin</groupId>
-  <artifactId>plugin-step-image_selection</artifactId>
+  <artifactId>plugin-step-image-selection</artifactId>
   <packaging>pom</packaging>
   <modules>
     <module>module-base</module>
