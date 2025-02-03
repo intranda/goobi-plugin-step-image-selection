@@ -24,7 +24,6 @@
     xmlns:o="http://omnifaces.org/ui" 
     xmlns:of="http://omnifaces.org/functions" 
     template="/uii/templatePG/templatePG.html"
-    xmlns:x="http://myfaces.apache.org/tomahawk" 
     xmlns:intranda="http://xmlns.jcp.org/jsf/composite/compositesPG"
     xmlns:jsf="http://xmlns.jcp.org/jsf">
 
@@ -303,8 +302,8 @@
                             <span>
                                 <h:outputText value="#{msgs.save}" />
                             </span>
-                            <x:updateActionListener
-                                property="#{NavigationForm.uiStatus.pluginSimulation}"
+                            <f:setPropertyActionListener
+                                target="#{NavigationForm.uiStatus.pluginSimulation}"
                                 value="#{false}" />
                         </button>
                         <!-- // BUTTON TO SAVE PROPERTY -->
@@ -317,8 +316,8 @@
                             <span>
                                 <h:outputText value="#{msgs.pluginLeave}" />
                             </span>
-                            <x:updateActionListener
-                                property="#{NavigationForm.uiStatus.pluginSimulation}"
+                            <f:setPropertyActionListener
+                                target="#{NavigationForm.uiStatus.pluginSimulation}"
                                 value="#{false}" />
                         </button>
                         <!-- // LEAVE PLUGIN -->
@@ -406,7 +405,7 @@
             });
         
             /* needed to keep the images' sizes unchanged */
-             jsf.ajax.addOnEvent((data) => {
+            faces.ajax.addOnEvent((data) => {
                 var ajaxstatus = data.status; // Can be "begin", "complete" and "success"
                 switch (ajaxstatus) {
                     case "success": // This is called when ajax response is successfully processed.
