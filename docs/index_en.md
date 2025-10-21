@@ -3,6 +3,10 @@ title: Selection of images
 identifier: intranda_step_image_selection
 published: true
 description: With the plugin for the selection of images, images can be visually selected.
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Step Plugin
 ---
 ## Introduction
 This plugin is used for the visual selection of images. It allows you to select, deselect and sort the selected images using drag & drop.
