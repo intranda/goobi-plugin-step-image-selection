@@ -3,6 +3,10 @@ title: Auswahl von Bildern
 identifier: intranda_step_image_selection
 published: true
 description: Mit dem Plugin für die Auswahl von Bildern lassen sich Bilder aus einer Menge von Bildern auswählen.
+keywords:
+    - Goobi workflow
+    - Plugin
+    - Step Plugin
 ---
 ## Einführung
 Diese Plugin dient zur visuellen Auswahl von Bildern. Es erlaubt Auswahl, Abwahl und Sortierung der ausgewählten Bilder per Drag & Drop.
