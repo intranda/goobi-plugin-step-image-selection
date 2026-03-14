@@ -9,7 +9,7 @@ keywords:
     - Step Plugin
 ---
 ## Einführung
-Diese Plugin dient zur visuellen Auswahl von Bildern. Es erlaubt Auswahl, Abwahl und Sortierung der ausgewählten Bilder per Drag & Drop.
+Dieses Plugin dient zur visuellen Auswahl von Bildern. Es erlaubt Auswahl, Abwahl und Sortierung der ausgewählten Bilder per Drag & Drop.
 
 
 ## Installation
@@ -40,7 +40,7 @@ Wird die konfigurierte Maximalanzahl an ausgewählten Bildern erreicht oder wird
 
 Ausgewählte Bilder können per Drag & Drop wieder abgewählt werden. Ziehen Sie einfach das Bild aus der rechten Box und legen Sie es in der linken Box ab. 
 
-Die relative Position eines ausgewälten Bildes kann mit seinem Nachbarn getauscht werden, indem man die obere bzw. untere Hälfte des Bildes anklickt. Es gibt hierbei zwei Ausnahmen ohne Tauschen: wenn man die obere Hälfte des ersten ausgewälten Bildes anklickt, dann wird es zum Ende der Liste angehängt; wenn man die untere Hälfte des letzten Bildes anklickt, dann wird es an den Anfang der Liste verschoben. Um ein ausgewähltes Bild zum Anfang der Liste zu verschieben, kann man auch auf dieses Bild mit der rechte Maustaste klicken.
+Die relative Position eines ausgewählten Bildes kann mit seinem Nachbarn getauscht werden, indem man die obere bzw. untere Hälfte des Bildes anklickt. Es gibt hierbei zwei Ausnahmen ohne Tauschen: wenn man die obere Hälfte des ersten ausgewählten Bildes anklickt, dann wird es zum Ende der Liste angehängt; wenn man die untere Hälfte des letzten Bildes anklickt, dann wird es an den Anfang der Liste verschoben. Um ein ausgewähltes Bild zum Anfang der Liste zu verschieben, kann man auch auf dieses Bild mit der rechte Maustaste klicken.
 
 Bitte beachten Sie, dass die Schaltfläche zum Speichern angeklickt werden muss, um die Informationen der ausgewählten Bilder innerhalb der Vorgangseigenschaften zu speichern. 
 
