@@ -25,7 +25,8 @@
     xmlns:of="http://omnifaces.org/functions"
     template="/uii/template/template.html"
     xmlns:intranda="http://xmlns.jcp.org/jsf/composite/composites"
-    xmlns:jsf="http://xmlns.jcp.org/jsf">
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:util="http://goobi.io/util">
 
     <ui:param name="myPageTitle" value="#{msgs.plugin}: #{msgs[('plugin_').concat(AktuelleSchritteForm.myPlugin.title)]}" />
 
@@ -90,7 +91,7 @@
 
                     <intranda:boxTitle
                         title="#{msgs.plugin_intranda_step_image_selection_availableImages}"
-                        icon="fa-puzzle-piece">
+                        icon="puzzle">
 
                         <div class="actions d-flex">
                             <button
@@ -99,7 +100,7 @@
                                 jsf:rel="tooltip"
                                 jsf:action="#{NavigationForm.Reload}"
                                 title="#{msgs.reload}">
-                                <i class="fa fa-refresh"></i>
+                                <util:icon icon="refresh" />
                             </button>
                         </div>
                     </intranda:boxTitle>
@@ -187,7 +188,7 @@
                 <intranda:box
                     boxType="action"
                     boxPadding="true"
-                    icon="fa-puzzle-piece"
+                    icon="puzzle"
                     title="#{msgs.plugin_intranda_step_image_selection_selectedImages}">
 
                     <!-- CONTENT AREA -->
@@ -298,7 +299,7 @@
                         <button class="btn btn-success float-end"
                             jsf:id="save-property-button"
                             jsf:action="#{AktuelleSchritteForm.myPlugin.saveAsProperty}">
-                            <i class="fa fa-save"></i>
+                            <util:icon icon="device-floppy" />
                             <span>
                                 <h:outputText value="#{msgs.save}" />
                             </span>
